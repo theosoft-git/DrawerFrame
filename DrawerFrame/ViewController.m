@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ViewController2.h"
 
 @interface ViewController ()
 
@@ -26,4 +27,8 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)go2nextPage:(id)sender {
+    ViewController2 *debugPanel = [[ViewController2 alloc] init];
+	[self.navigationController pushViewController:debugPanel animated:YES];
+}
 @end

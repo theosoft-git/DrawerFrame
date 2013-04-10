@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  TSNavigatioController.h
 //  DrawerFrame
 //
 //  Created by Johnson Zhang on 13-3-28.
@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DrawerViewController.h"
 
-@interface ViewController : DrawerViewController
+@interface TSNavigatioController : UINavigationController
 
-- (IBAction)go2nextPage:(id)sender;
+@property (nonatomic, strong) UIImageView *imageView;
+
 @end

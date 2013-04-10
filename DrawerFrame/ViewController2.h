@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ViewController2.h
 //  DrawerFrame
 //
 //  Created by Johnson Zhang on 13-3-28.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "DrawerViewController.h"
 
-@interface ViewController : DrawerViewController
+@interface ViewController2 : DrawerViewController
 
-- (IBAction)go2nextPage:(id)sender;
+- (IBAction)go2next:(id)sender;
 @end

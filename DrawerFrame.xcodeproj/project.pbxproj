@@ -18,6 +18,10 @@
 		2CBC1F2E170442BE00F52C15 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CBC1F2D170442BE00F52C15 /* Default-568h@2x.png */; };
 		2CBC1F31170442BE00F52C15 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F30170442BE00F52C15 /* ViewController.m */; };
 		2CBC1F34170442BE00F52C15 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CBC1F32170442BE00F52C15 /* ViewController.xib */; };
+		2CBC1F3D1704431300F52C15 /* ViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F3B1704431300F52C15 /* ViewController2.m */; };
+		2CBC1F3E1704431300F52C15 /* ViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CBC1F3C1704431300F52C15 /* ViewController2.xib */; };
+		2CBC1F411704452600F52C15 /* TSNavigatioController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F401704452600F52C15 /* TSNavigatioController.m */; };
+		2CBC1F4D17056F8200F52C15 /* DrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +41,13 @@
 		2CBC1F2F170442BE00F52C15 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2CBC1F30170442BE00F52C15 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2CBC1F33170442BE00F52C15 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
+		2CBC1F3A1704431300F52C15 /* ViewController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController2.h; sourceTree = "<group>"; };
+		2CBC1F3B1704431300F52C15 /* ViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController2.m; sourceTree = "<group>"; };
+		2CBC1F3C1704431300F52C15 /* ViewController2.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController2.xib; sourceTree = "<group>"; };
+		2CBC1F3F1704452600F52C15 /* TSNavigatioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSNavigatioController.h; sourceTree = "<group>"; };
+		2CBC1F401704452600F52C15 /* TSNavigatioController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSNavigatioController.m; sourceTree = "<group>"; };
+		2CBC1F4B17056F8100F52C15 /* DrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawerViewController.h; sourceTree = "<group>"; };
+		2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawerViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +100,13 @@
 				2CBC1F30170442BE00F52C15 /* ViewController.m */,
 				2CBC1F32170442BE00F52C15 /* ViewController.xib */,
 				2CBC1F1E170442BE00F52C15 /* Supporting Files */,
+				2CBC1F3A1704431300F52C15 /* ViewController2.h */,
+				2CBC1F3B1704431300F52C15 /* ViewController2.m */,
+				2CBC1F3C1704431300F52C15 /* ViewController2.xib */,
+				2CBC1F3F1704452600F52C15 /* TSNavigatioController.h */,
+				2CBC1F401704452600F52C15 /* TSNavigatioController.m */,
+				2CBC1F4B17056F8100F52C15 /* DrawerViewController.h */,
+				2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */,
 			);
 			path = DrawerFrame;
 			sourceTree = "<group>";
@@ -163,6 +181,7 @@
 				2CBC1F2C170442BE00F52C15 /* Default@2x.png in Resources */,
 				2CBC1F2E170442BE00F52C15 /* Default-568h@2x.png in Resources */,
 				2CBC1F34170442BE00F52C15 /* ViewController.xib in Resources */,
+				2CBC1F3E1704431300F52C15 /* ViewController2.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +195,9 @@
 				2CBC1F24170442BE00F52C15 /* main.m in Sources */,
 				2CBC1F28170442BE00F52C15 /* AppDelegate.m in Sources */,
 				2CBC1F31170442BE00F52C15 /* ViewController.m in Sources */,
+				2CBC1F3D1704431300F52C15 /* ViewController2.m in Sources */,
+				2CBC1F411704452600F52C15 /* TSNavigatioController.m in Sources */,
+				2CBC1F4D17056F8200F52C15 /* DrawerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +285,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DrawerFrame/DrawerFrame-Prefix.pch";
 				INFOPLIST_FILE = "DrawerFrame/DrawerFrame-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -274,6 +297,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DrawerFrame/DrawerFrame-Prefix.pch";
 				INFOPLIST_FILE = "DrawerFrame/DrawerFrame-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -298,6 +322,7 @@
 				2CBC1F39170442BE00F52C15 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
