@@ -81,14 +81,26 @@
     NSLog(@"x:%.2f", translation.x);
     
     if ([[self viewControllers] count] > 1) {
-        [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
-        double scale = MIN(1.0f, 0.95 + translation.x / 4000);
-        [_imageView setTransform:CGAffineTransformMakeScale(scale, scale)];
-        double alpha = MIN(1.0f, 0.6 + translation.x / 500);
-        _imageView.alpha = alpha;
+        if (translation.x > 0) {
+            [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
+            double scale = MIN(1.0f, 0.95 + translation.x / 4000);
+            [_imageView setTransform:CGAffineTransformMakeScale(scale, scale)];
+            double alpha = MIN(1.0f, 0.6 + translation.x / 500);
+            _imageView.alpha = alpha;
+        }
         if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             if (translation.x > 100) {
-                [self popViewControllerAnimated:YES];
+                [UIView animateWithDuration:0.3
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseInOut
+                                 animations:^(void){
+                                     [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                                     _imageView.alpha = 1;
+                                     [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                 }completion:^(BOOL finish){
+                                     [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                     [self popViewControllerAnimated:NO];
+                                 }];
             }else{
                 [UIView animateWithDuration:0.2
                                       delay:0
@@ -108,39 +120,14 @@
 - (UIViewController *)popViewControllerAnimated:(BOOL)animated
 {
     UIViewController *poppedViewController;
-    if (animated) {
-        UIView *curView = [self view];
-        
-        [UIView animateWithDuration:0.3
-                              delay:0
-                            options:UIViewAnimationOptionCurveEaseInOut
-                         animations:^(void){
-                             [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                             _imageView.alpha = 1;
-                             [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
-                         }completion:^(BOOL finish){
-                             [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                             DrawerViewController *lastViewController = [[self viewControllers] lastObject];
-                             if (_imageView) {
-                                 [_imageView removeFromSuperview];
-                             }
-                             if (lastViewController.imageView) {
-                                 _imageView = lastViewController.imageView;
-                                 [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
-                             }
-                         }];
-        poppedViewController = (UIViewController *)[super popViewControllerAnimated:NO];
+    poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
+    DrawerViewController *lastViewController = [[self viewControllers] lastObject];
+    if (_imageView) {
+        [_imageView removeFromSuperview];
     }
-    else {
-        poppedViewController = (UIViewController *)[super popViewControllerAnimated:NO];
-        DrawerViewController *lastViewController = [[self viewControllers] lastObject];
-        if (_imageView) {
-            [_imageView removeFromSuperview];
-        }
-        if (lastViewController.imageView) {
-            _imageView = lastViewController.imageView;
-            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
-        }
+    if (lastViewController.imageView) {
+        _imageView = lastViewController.imageView;
+        [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
     }
     return poppedViewController;
 }
