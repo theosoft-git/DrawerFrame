@@ -38,6 +38,8 @@
 
 - (IBAction)go2next:(id)sender {
     ViewController *debugPanel = [[ViewController alloc] init];
-	[self.navigationController pushViewController:debugPanel animated:YES];
+//    float seed = arc4random() % 2;
+//	[self.navigationController pushViewController:debugPanel animated:seed < 0.5 ? YES : NO];
+    [self.navigationController pushViewController:debugPanel animated:YES];
 }
 @end

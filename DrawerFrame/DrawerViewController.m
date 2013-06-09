@@ -23,6 +23,11 @@
     return self;
 }
 
+- (BOOL)isDrawerView
+{
+    return YES;     //黑名单制，不需要支持的页面请返回NO；也可以将这里改为NO，成为白名单制
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

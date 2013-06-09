@@ -50,33 +50,47 @@
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    DrawerViewController *controller = (DrawerViewController*) viewController;
-    [controller initDrawerView];
-    if (_imageView) {
-        [_imageView removeFromSuperview];
+	if ([viewController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *controller = (DrawerViewController *) viewController;
+        if ([controller isDrawerView]) {
+            [controller initDrawerView];
+            if (_imageView) {
+                [_imageView removeFromSuperview];
+            }
+            _imageView = controller.imageView;
+            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+            if (animated) {
+                UIView *curView = [self view];
+                [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                [super pushViewController:controller animated:NO];
+                [UIView animateWithDuration:0.3
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseInOut
+                                 animations:^(void){
+                                     [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                     [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                     _imageView.alpha = 0.6;
+                                 }completion:^(BOOL finish){
+                                 }];
+                return;
+            }
+        }
     }
-    _imageView = controller.imageView;
-    [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
 	
-    UIView *curView = [self view];
-    [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-	[super pushViewController:controller animated:NO];
-    [UIView animateWithDuration:0.3
-                          delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^(void){
-                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                         [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
-                         _imageView.alpha = 0.6;
-                     }completion:^(BOOL finish){
-                     }];
-
+	[super pushViewController:viewController animated:animated];
 //    [super pushViewController:viewController animated:animated];
 }
 
 - (void)HandlePan:(UIPanGestureRecognizer*)panGestureRecognizer{
     UIView *curView = [self view];
-    
+    if (![[[self viewControllers] lastObject] isKindOfClass:[DrawerViewController class]]) {
+        return;
+    }
+    DrawerViewController *lastViewController = (DrawerViewController *)[[self viewControllers] lastObject];
+    if (![lastViewController isDrawerView]) {
+        return;
+    }
+   
     CGPoint translation = [panGestureRecognizer translationInView:self.imageView];
     NSLog(@"x:%.2f", translation.x);
     
@@ -121,14 +135,42 @@
 {
     UIViewController *poppedViewController;
     poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
-    DrawerViewController *lastViewController = [[self viewControllers] lastObject];
+    UIViewController *lastController = [[self viewControllers] lastObject];
     if (_imageView) {
         [_imageView removeFromSuperview];
     }
-    if (lastViewController.imageView) {
-        _imageView = lastViewController.imageView;
-        [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+    if ([lastController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *curViewController = (DrawerViewController *)lastController;
+        if ([curViewController isDrawerView] && curViewController.imageView) {
+            _imageView = curViewController.imageView;
+            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+        }
     }
     return poppedViewController;
 }
+
+- (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
+    if (_imageView) {
+        [_imageView removeFromSuperview];
+    }
+    UIViewController *lastController = [[self viewControllers] lastObject];
+    if ([lastController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *curViewController = (DrawerViewController *)lastController;
+        if ([curViewController isDrawerView] && curViewController.imageView) {
+            _imageView = curViewController.imageView;
+            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+        }
+    }
+	return poppedViewController;
+}
+
+- (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
+	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
+    if (_imageView) {
+        [_imageView removeFromSuperview];
+    }
+	return poppedViewController;
+}
+
 @end

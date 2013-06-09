@@ -17,4 +17,6 @@
 
 - (void)initDrawerView;
 
+- (BOOL)isDrawerView;
+
 @end
