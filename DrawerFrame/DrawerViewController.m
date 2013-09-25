@@ -39,24 +39,4 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-- (void)initDrawerView
-{
-    UIView *curView = [[[AppDelegate instance] navigationController] view];
-    
-    if (UIGraphicsBeginImageContextWithOptions != NULL) {
-        UIGraphicsBeginImageContextWithOptions(curView.frame.size, NO, 0.0);
-    }
-    else {
-        UIGraphicsBeginImageContext(curView.frame.size);
-    }
-    
-    [curView.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *lastViewImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    _imageView = [[UIImageView alloc]initWithImage:lastViewImage];
-    _imageView.frame  = curView.frame;
-    _imageView.backgroundColor = [UIColor blackColor];
-}
 @end

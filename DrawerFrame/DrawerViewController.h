@@ -11,11 +11,9 @@
 @interface DrawerViewController : UIViewController {
 }
 
-@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UIImage *backImage;
 
 @property (nonatomic, strong) UIView *contentView;
-
-- (void)initDrawerView;
 
 - (BOOL)isDrawerView;
 

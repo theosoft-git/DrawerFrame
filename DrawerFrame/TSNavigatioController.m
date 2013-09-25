@@ -53,12 +53,9 @@
 	if ([viewController isKindOfClass:[DrawerViewController class]]) {
         DrawerViewController *controller = (DrawerViewController *) viewController;
         if ([controller isDrawerView]) {
-            [controller initDrawerView];
-            if (_imageView) {
-                [_imageView removeFromSuperview];
-            }
-            _imageView = controller.imageView;
-            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+            [self initDrawerView:controller];
+            [self initBackImage:controller.backImage];
+
             if (animated) {
                 UIView *curView = [self view];
                 [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
@@ -131,19 +128,48 @@
     }
 }
 
+- (void)initDrawerView:(DrawerViewController *)viewController
+{
+    UIView *curView = [self view];
+    
+    if (UIGraphicsBeginImageContextWithOptions != NULL) {
+        UIGraphicsBeginImageContextWithOptions(curView.frame.size, NO, 0.0);
+    }
+    else {
+        UIGraphicsBeginImageContext(curView.frame.size);
+    }
+    
+    [curView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *lastViewImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    [viewController setBackImage:lastViewImage];
+}
+
+- (void)initBackImage:(UIImage *)backImage
+{
+    if (!_imageView) {
+        _imageView = [[UIImageView alloc] initWithImage:backImage];
+        _imageView.frame  = self.view.frame;
+        _imageView.backgroundColor = [UIColor blackColor];
+        [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+    }
+    else {
+        [_imageView setImage:backImage];
+        [_imageView setTransform:CGAffineTransformMakeScale(1, 1)];
+        _imageView.alpha = 1;
+    }
+}
+
 - (UIViewController *)popViewControllerAnimated:(BOOL)animated
 {
     UIViewController *poppedViewController;
     poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
     UIViewController *lastController = [[self viewControllers] lastObject];
-    if (_imageView) {
-        [_imageView removeFromSuperview];
-    }
     if ([lastController isKindOfClass:[DrawerViewController class]]) {
         DrawerViewController *curViewController = (DrawerViewController *)lastController;
-        if ([curViewController isDrawerView] && curViewController.imageView) {
-            _imageView = curViewController.imageView;
-            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+        if ([curViewController isDrawerView] && curViewController.backImage) {
+            [self initBackImage:curViewController.backImage];
         }
     }
     return poppedViewController;
@@ -151,15 +177,11 @@
 
 - (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
-    if (_imageView) {
-        [_imageView removeFromSuperview];
-    }
     UIViewController *lastController = [[self viewControllers] lastObject];
     if ([lastController isKindOfClass:[DrawerViewController class]]) {
         DrawerViewController *curViewController = (DrawerViewController *)lastController;
-        if ([curViewController isDrawerView] && curViewController.imageView) {
-            _imageView = curViewController.imageView;
-            [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+        if ([curViewController isDrawerView] && curViewController.backImage) {
+            [self initBackImage:curViewController.backImage];
         }
     }
 	return poppedViewController;
@@ -167,9 +189,6 @@
 
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
 	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
-    if (_imageView) {
-        [_imageView removeFromSuperview];
-    }
 	return poppedViewController;
 }
 
