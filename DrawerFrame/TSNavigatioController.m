@@ -17,6 +17,9 @@
 
 @implementation TSNavigatioController
 
+//Whether to use iOS7 style animation
+static bool useIOS7Animation = NO;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -57,18 +60,23 @@
             [self initBackImage:controller.backImage];
 
             if (animated) {
-                UIView *curView = [self view];
-                [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                [super pushViewController:controller animated:NO];
-                [UIView animateWithDuration:0.3
-                                      delay:0
-                                    options:UIViewAnimationOptionCurveEaseInOut
-                                 animations:^(void){
-                                     [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                                     [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
-                                     _imageView.alpha = 0.6;
-                                 }completion:^(BOOL finish){
-                                 }];
+                if (useIOS7Animation) {
+                    [super pushViewController:controller animated:YES];
+                }
+                else {
+                    UIView *curView = [self view];
+                    [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                    [super pushViewController:controller animated:NO];
+                    [UIView animateWithDuration:0.3
+                                          delay:0
+                                        options:UIViewAnimationOptionCurveEaseInOut
+                                     animations:^(void){
+                                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                         [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                         _imageView.alpha = 0.6;
+                                     }completion:^(BOOL finish){
+                                     }];
+                }
                 return;
             }
         }
@@ -94,10 +102,16 @@
     if ([[self viewControllers] count] > 1) {
         if (translation.x > 0) {
             [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
-            double scale = MIN(1.0f, 0.95 + translation.x / 4000);
-            [_imageView setTransform:CGAffineTransformMakeScale(scale, scale)];
-            double alpha = MIN(1.0f, 0.6 + translation.x / 500);
-            _imageView.alpha = alpha;
+            if (useIOS7Animation) {
+                double translatedX = translation.x / 2.0f - 160;
+                [_imageView setTransform:CGAffineTransformMakeTranslation(translatedX, 0)];
+            }
+            else {
+                double scale = MIN(1.0f, 0.95 + translation.x / 4000);
+                [_imageView setTransform:CGAffineTransformMakeScale(scale, scale)];
+                double alpha = MIN(1.0f, 0.6 + translation.x / 500);
+                _imageView.alpha = alpha;
+            }
         }
         if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             if (translation.x > 100) {
@@ -106,8 +120,13 @@
                                     options:UIViewAnimationOptionCurveEaseInOut
                                  animations:^(void){
                                      [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                                     _imageView.alpha = 1;
-                                     [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                     if (useIOS7Animation) {
+                                         [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                     }
+                                     else {
+                                         _imageView.alpha = 1;
+                                         [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                     }
                                  }completion:^(BOOL finish){
                                      [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
                                      [self popViewControllerAnimated:NO];
@@ -118,8 +137,13 @@
                                     options:UIViewAnimationOptionCurveEaseInOut
                                  animations:^(void){
                                      [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                                     _imageView.alpha = 0.95;
-                                     [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                     if (useIOS7Animation) {
+                                         [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                                     }
+                                     else {
+                                         _imageView.alpha = 0.95;
+                                         [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                     }
                                  }completion:^(BOOL finish){
                                      
                                  }];
@@ -158,6 +182,7 @@
         [_imageView setImage:backImage];
         [_imageView setTransform:CGAffineTransformMakeScale(1, 1)];
         _imageView.alpha = 1;
+        [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
     }
 }
 
@@ -171,6 +196,9 @@
         if ([curViewController isDrawerView] && curViewController.backImage) {
             [self initBackImage:curViewController.backImage];
         }
+        else if (_imageView) {
+            [_imageView setImage:nil];
+        }
     }
     return poppedViewController;
 }
@@ -183,12 +211,18 @@
         if ([curViewController isDrawerView] && curViewController.backImage) {
             [self initBackImage:curViewController.backImage];
         }
+        else if (_imageView) {
+            [_imageView setImage:nil];
+        }
     }
 	return poppedViewController;
 }
 
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
 	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
+    if (_imageView) {
+        [_imageView setImage:nil];
+    }
 	return poppedViewController;
 }
 
