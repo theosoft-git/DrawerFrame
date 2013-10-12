@@ -102,6 +102,9 @@ static bool useIOS7Animation = NO;
     if ([[self viewControllers] count] > 1) {
         if (translation.x > 0) {
             [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
+            curView.layer.shadowOffset = CGSizeMake(-4, 0);
+            curView.layer.shadowColor = [[UIColor blackColor] CGColor];
+            curView.layer.shadowOpacity = 0.5;
             if (useIOS7Animation) {
                 double translatedX = translation.x / 2.0f - 160;
                 [_imageView setTransform:CGAffineTransformMakeTranslation(translatedX, 0)];
