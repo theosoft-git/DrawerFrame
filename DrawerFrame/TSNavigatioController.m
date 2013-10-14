@@ -16,6 +16,10 @@
 @end
 
 @implementation TSNavigatioController
+{
+    BOOL            isShowingAnimation;
+    UIImageView     *img_shadow;
+}
 
 //Whether to use iOS7 style animation
 static bool useIOS7Animation = NO;
@@ -36,6 +40,7 @@ static bool useIOS7Animation = NO;
                                                        initWithTarget:self
                                                        action:@selector(HandlePan:)];
         [self.view addGestureRecognizer:panGestureRecognier];
+        img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
 	}
 	return self;
 }
@@ -101,10 +106,18 @@ static bool useIOS7Animation = NO;
     
     if ([[self viewControllers] count] > 1) {
         if (translation.x > 0) {
+            if (!isShowingAnimation) {
+                isShowingAnimation = YES;
+//                curView.layer.shadowOffset = CGSizeMake(-4, 0);
+//                curView.layer.shadowColor = [[UIColor blackColor] CGColor];
+//                curView.layer.shadowOpacity = 0.5;
+                CGRect screenFrame = [[UIScreen mainScreen] bounds];
+                curView.clipsToBounds = NO;
+                [curView addSubview:img_shadow];
+                [img_shadow setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
+            }
+            
             [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
-            curView.layer.shadowOffset = CGSizeMake(-4, 0);
-            curView.layer.shadowColor = [[UIColor blackColor] CGColor];
-            curView.layer.shadowOpacity = 0.5;
             if (useIOS7Animation) {
                 double translatedX = translation.x / 2.0f - 160;
                 [_imageView setTransform:CGAffineTransformMakeTranslation(translatedX, 0)];
@@ -132,6 +145,7 @@ static bool useIOS7Animation = NO;
                                      }
                                  }completion:^(BOOL finish){
                                      [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                     isShowingAnimation = NO;
                                      [self popViewControllerAnimated:NO];
                                  }];
             }else{
@@ -148,7 +162,8 @@ static bool useIOS7Animation = NO;
                                          [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
                                      }
                                  }completion:^(BOOL finish){
-                                     
+                                     [img_shadow removeFromSuperview];
+                                     isShowingAnimation = NO;
                                  }];
             }
         }
