@@ -8,6 +8,8 @@
 
 #import "ViewController2.h"
 #import "ViewController.h"
+#import "TSNavigatioController.h"
+#import "AppDelegate.h"
 
 @interface ViewController2 ()
 
@@ -41,5 +43,19 @@
 //    float seed = arc4random() % 2;
 //	[self.navigationController pushViewController:debugPanel animated:seed < 0.5 ? YES : NO];
     [self.navigationController pushViewController:debugPanel animated:YES];
+}
+
+- (IBAction)popModelView:(id)sender {
+    ViewController *debugPanel = [[ViewController alloc] init];
+    UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(CloseModel)];
+    [[debugPanel navigationItem] setLeftBarButtonItem:cancel];
+    
+    TSNavigatioController *navController = [[TSNavigatioController alloc] initWithRootViewController:debugPanel];
+    [[AppDelegate instance].viewController presentModalViewController:navController animated:YES];
+}
+
+- (void)CloseModel
+{
+    [self dismissModalViewControllerAnimated:YES];
 }
 @end

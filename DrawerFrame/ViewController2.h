@@ -12,4 +12,5 @@
 @interface ViewController2 : DrawerViewController
 
 - (IBAction)go2next:(id)sender;
+- (IBAction)popModelView:(id)sender;
 @end

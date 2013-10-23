@@ -22,7 +22,7 @@
 }
 
 //Whether to use iOS7 style animation
-static bool useIOS7Animation = NO;
+static bool useIOS7Animation = YES;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -60,7 +60,7 @@ static bool useIOS7Animation = NO;
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	if ([viewController isKindOfClass:[DrawerViewController class]]) {
         DrawerViewController *controller = (DrawerViewController *) viewController;
-        if ([controller isDrawerView]) {
+        if ([controller isDrawerView] && [self.viewControllers count] > 0) {
             [self initDrawerView:controller];
             [self initBackImage:controller.backImage];
 
@@ -194,7 +194,14 @@ static bool useIOS7Animation = NO;
         _imageView = [[UIImageView alloc] initWithImage:backImage];
         _imageView.frame  = self.view.frame;
         _imageView.backgroundColor = [UIColor blackColor];
-        [[[AppDelegate instance] window] insertSubview:_imageView atIndex:0];
+        int zIndex = 0;
+        for (UIView *view in [[AppDelegate instance] window].subviews) {
+            if (view == self.view) {
+                break;
+            }
+            zIndex++;
+        }
+        [[[AppDelegate instance] window] insertSubview:_imageView atIndex:zIndex];
     }
     else {
         [_imageView setImage:backImage];
@@ -218,6 +225,10 @@ static bool useIOS7Animation = NO;
             [_imageView setImage:nil];
         }
     }
+    if ([[self viewControllers] count] == 1 && _imageView) {
+        [_imageView removeFromSuperview];
+        _imageView = nil;
+    }
     return poppedViewController;
 }
 
@@ -233,13 +244,18 @@ static bool useIOS7Animation = NO;
             [_imageView setImage:nil];
         }
     }
+    if ([[self viewControllers] count] == 1 && _imageView) {
+        [_imageView removeFromSuperview];
+        _imageView = nil;
+    }
 	return poppedViewController;
 }
 
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
 	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
     if (_imageView) {
-        [_imageView setImage:nil];
+        [_imageView removeFromSuperview];
+        _imageView = nil;
     }
 	return poppedViewController;
 }
