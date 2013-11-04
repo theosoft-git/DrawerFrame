@@ -17,18 +17,36 @@
 
 @implementation TSNavigatioController
 {
-    BOOL            isShowingAnimation;
-    UIImageView     *img_shadow;
+    BOOL                    isShowingAnimation;
+    UIImageView             *img_shadow;
+    UIPanGestureRecognizer  *_panGestureRecognier;
 }
 
 //Whether to use iOS7 style animation
 static bool useIOS7Animation = YES;
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _panGestureRecognier = [[UIPanGestureRecognizer alloc]
+                                initWithTarget:self
+                                action:@selector(HandlePan:)];
+        [self.view addGestureRecognizer:_panGestureRecognier];
+        img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
+    }
+    return self;
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        _panGestureRecognier = [[UIPanGestureRecognizer alloc]
+                                initWithTarget:self
+                                action:@selector(HandlePan:)];
+        [self.view addGestureRecognizer:_panGestureRecognier];
+        img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
     }
     return self;
 }
@@ -36,10 +54,10 @@ static bool useIOS7Animation = YES;
 - (id)initWithRootViewController:(UIViewController *)rootViewController {
 	self = [super initWithRootViewController:rootViewController];
 	if (self) {
-        UIPanGestureRecognizer *panGestureRecognier = [[UIPanGestureRecognizer alloc]
+        _panGestureRecognier = [[UIPanGestureRecognizer alloc]
                                                        initWithTarget:self
                                                        action:@selector(HandlePan:)];
-        [self.view addGestureRecognizer:panGestureRecognier];
+        [self.view addGestureRecognizer:_panGestureRecognier];
         img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
 	}
 	return self;
@@ -58,9 +76,11 @@ static bool useIOS7Animation = YES;
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    _panGestureRecognier.enabled = NO;
 	if ([viewController isKindOfClass:[DrawerViewController class]]) {
         DrawerViewController *controller = (DrawerViewController *) viewController;
         if ([controller isDrawerView] && [self.viewControllers count] > 0) {
+            _panGestureRecognier.enabled = YES;
             [self initDrawerView:controller];
             [self initBackImage:controller.backImage];
 
@@ -91,6 +111,60 @@ static bool useIOS7Animation = YES;
 //    [super pushViewController:viewController animated:animated];
 }
 
+- (UIViewController *)popViewControllerAnimated:(BOOL)animated
+{
+    _panGestureRecognier.enabled = NO;
+    UIViewController *poppedViewController;
+    poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
+    UIViewController *lastController = [[self viewControllers] lastObject];
+    if ([lastController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *curViewController = (DrawerViewController *)lastController;
+        if ([curViewController isDrawerView] && curViewController.backImage) {
+            [self initBackImage:curViewController.backImage];
+            _panGestureRecognier.enabled = YES;
+        }
+        else if (_imageView) {
+            [_imageView setImage:nil];
+        }
+    }
+    if ([[self viewControllers] count] == 1 && _imageView) {
+        [_imageView removeFromSuperview];
+        _imageView = nil;
+    }
+    return poppedViewController;
+}
+
+- (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    _panGestureRecognier.enabled = NO;
+	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
+    UIViewController *lastController = [[self viewControllers] lastObject];
+    if ([lastController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *curViewController = (DrawerViewController *)lastController;
+        if ([curViewController isDrawerView] && curViewController.backImage) {
+            [self initBackImage:curViewController.backImage];
+            _panGestureRecognier.enabled = YES;
+        }
+        else if (_imageView) {
+            [_imageView setImage:nil];
+        }
+    }
+    if ([[self viewControllers] count] == 1 && _imageView) {
+        [_imageView removeFromSuperview];
+        _imageView = nil;
+    }
+	return poppedViewController;
+}
+
+- (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
+    _panGestureRecognier.enabled = NO;
+	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
+    if (_imageView) {
+        [_imageView removeFromSuperview];
+        _imageView = nil;
+    }
+	return poppedViewController;
+}
+
 - (void)HandlePan:(UIPanGestureRecognizer*)panGestureRecognizer{
     UIView *curView = [self view];
     if (![[[self viewControllers] lastObject] isKindOfClass:[DrawerViewController class]]) {
@@ -100,7 +174,7 @@ static bool useIOS7Animation = YES;
     if (![lastViewController isDrawerView]) {
         return;
     }
-   
+    
     CGPoint translation = [panGestureRecognizer translationInView:self.imageView];
     NSLog(@"x:%.2f", translation.x);
     
@@ -108,9 +182,9 @@ static bool useIOS7Animation = YES;
         if (translation.x > 0) {
             if (!isShowingAnimation) {
                 isShowingAnimation = YES;
-//                curView.layer.shadowOffset = CGSizeMake(-4, 0);
-//                curView.layer.shadowColor = [[UIColor blackColor] CGColor];
-//                curView.layer.shadowOpacity = 0.5;
+                //                curView.layer.shadowOffset = CGSizeMake(-4, 0);
+                //                curView.layer.shadowColor = [[UIColor blackColor] CGColor];
+                //                curView.layer.shadowOpacity = 0.5;
                 CGRect screenFrame = [[UIScreen mainScreen] bounds];
                 curView.clipsToBounds = NO;
                 [curView addSubview:img_shadow];
@@ -194,14 +268,7 @@ static bool useIOS7Animation = YES;
         _imageView = [[UIImageView alloc] initWithImage:backImage];
         _imageView.frame  = self.view.frame;
         _imageView.backgroundColor = [UIColor blackColor];
-        int zIndex = 0;
-        for (UIView *view in [[AppDelegate instance] window].subviews) {
-            if (view == self.view) {
-                break;
-            }
-            zIndex++;
-        }
-        [[[AppDelegate instance] window] insertSubview:_imageView atIndex:zIndex];
+        [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
     }
     else {
         [_imageView setImage:backImage];
@@ -211,53 +278,12 @@ static bool useIOS7Animation = YES;
     }
 }
 
-- (UIViewController *)popViewControllerAnimated:(BOOL)animated
+- (void)dealloc
 {
-    UIViewController *poppedViewController;
-    poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
-    UIViewController *lastController = [[self viewControllers] lastObject];
-    if ([lastController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *curViewController = (DrawerViewController *)lastController;
-        if ([curViewController isDrawerView] && curViewController.backImage) {
-            [self initBackImage:curViewController.backImage];
-        }
-        else if (_imageView) {
-            [_imageView setImage:nil];
-        }
-    }
-    if ([[self viewControllers] count] == 1 && _imageView) {
-        [_imageView removeFromSuperview];
-        _imageView = nil;
-    }
-    return poppedViewController;
-}
-
-- (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
-    UIViewController *lastController = [[self viewControllers] lastObject];
-    if ([lastController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *curViewController = (DrawerViewController *)lastController;
-        if ([curViewController isDrawerView] && curViewController.backImage) {
-            [self initBackImage:curViewController.backImage];
-        }
-        else if (_imageView) {
-            [_imageView setImage:nil];
-        }
-    }
-    if ([[self viewControllers] count] == 1 && _imageView) {
-        [_imageView removeFromSuperview];
-        _imageView = nil;
-    }
-	return poppedViewController;
-}
-
-- (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
-	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
     if (_imageView) {
         [_imageView removeFromSuperview];
         _imageView = nil;
     }
-	return poppedViewController;
 }
 
 @end
