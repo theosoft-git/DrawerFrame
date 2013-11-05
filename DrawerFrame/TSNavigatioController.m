@@ -29,11 +29,13 @@ static bool useIOS7Animation = YES;
 {
     self = [super init];
     if (self) {
-        _panGestureRecognier = [[UIPanGestureRecognizer alloc]
-                                initWithTarget:self
-                                action:@selector(HandlePan:)];
-        [self.view addGestureRecognizer:_panGestureRecognier];
-        img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
+        if (!_panGestureRecognier) {
+            _panGestureRecognier = [[UIPanGestureRecognizer alloc]
+                                    initWithTarget:self
+                                    action:@selector(HandlePan:)];
+            [self.view addGestureRecognizer:_panGestureRecognier];
+            img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
+        }
     }
     return self;
 }
@@ -42,11 +44,13 @@ static bool useIOS7Animation = YES;
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _panGestureRecognier = [[UIPanGestureRecognizer alloc]
-                                initWithTarget:self
-                                action:@selector(HandlePan:)];
-        [self.view addGestureRecognizer:_panGestureRecognier];
-        img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
+        if (!_panGestureRecognier) {
+            _panGestureRecognier = [[UIPanGestureRecognizer alloc]
+                                    initWithTarget:self
+                                    action:@selector(HandlePan:)];
+            [self.view addGestureRecognizer:_panGestureRecognier];
+            img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
+        }
     }
     return self;
 }
