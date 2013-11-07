@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TSNavigatioController : UINavigationController
+@interface TSNavigatioController : UINavigationController <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UIImageView *imageView;
 
