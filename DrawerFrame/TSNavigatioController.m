@@ -279,7 +279,7 @@ static bool useIOS7Animation = YES;
         return NO;
     }
     DrawerViewController *lastViewController = (DrawerViewController *)[[self viewControllers] lastObject];
-    if (![lastViewController isDrawerView]) {
+    if (![lastViewController isDrawerView] || lastViewController.backImage == nil) {
         return NO;
     }
     CGPoint translation = [_panGestureRecognier translationInView:self.imageView];
