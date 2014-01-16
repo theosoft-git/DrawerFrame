@@ -11,7 +11,7 @@
 #import "TSNavigatioController.h"
 #import "AppDelegate.h"
 
-@interface ViewController2 ()
+@interface ViewController2 () <UITextFieldDelegate>
 
 @end
 
@@ -58,4 +58,15 @@
 {
     [self dismissModalViewControllerAnimated:YES];
 }
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    self.view.transform = CGAffineTransformMakeTranslation(0, -200);
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    self.view.transform = CGAffineTransformIdentity;
+}
+
 @end

@@ -85,6 +85,9 @@ static bool useIOS7Animation = YES;
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    UIView *curView = [self view];
+    [curView endEditing:YES];
+	
 	if ([viewController isKindOfClass:[DrawerViewController class]]) {
         DrawerViewController *controller = (DrawerViewController *) viewController;
         if ([controller isDrawerView] && [self.viewControllers count] > 0) {
@@ -96,7 +99,6 @@ static bool useIOS7Animation = YES;
                     [super pushViewController:controller animated:YES];
                 }
                 else {
-                    UIView *curView = [self view];
                     [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
                     [super pushViewController:controller animated:NO];
                     [UIView animateWithDuration:0.3
@@ -115,7 +117,6 @@ static bool useIOS7Animation = YES;
     }
 	
 	[super pushViewController:viewController animated:animated];
-//    [super pushViewController:viewController animated:animated];
 }
 
 - (UIViewController *)popViewControllerAnimated:(BOOL)animated
