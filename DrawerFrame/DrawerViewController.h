@@ -13,8 +13,6 @@
 
 @property (nonatomic, strong) UIImage *backImage;
 
-@property (nonatomic, strong) UIView *contentView;
-
 - (BOOL)isDrawerView;
 
 @end

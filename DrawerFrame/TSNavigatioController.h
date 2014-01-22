@@ -12,4 +12,15 @@
 
 @property (nonatomic, strong) UIImageView *imageView;
 
+- (void)popWithAnimation;
+- (void)continuePopWithAnimation;
+- (void)cancelPopWithAnimation;
+
+@end
+
+@interface UIViewController (NVNavigationController)
+
+- (UIBarButtonItem *)backBarButtonItem;
+- (void)backToPreviousViewController;
+- (void)cancelBackToPreviousViewController;
 @end

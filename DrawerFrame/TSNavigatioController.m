@@ -11,6 +11,43 @@
 #import "AppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
 
+@implementation UIViewController (NVNavigationController)
+
+- (UIBarButtonItem *)backBarButtonItem {
+    return [[UIBarButtonItem alloc] initWithTitle:@""
+                                     style:UIBarButtonItemStylePlain
+                                    target:self
+                                    action:@selector(backToPreviousViewController)];
+}
+
+- (void)backToPreviousViewController {
+	if ([self.navigationController isKindOfClass:[TSNavigatioController class]]) {
+        TSNavigatioController *navController = (TSNavigatioController *)self.navigationController;
+        if ([self isKindOfClass:[DrawerViewController class]]) {
+            DrawerViewController *curView = (DrawerViewController *)self;
+            
+            if ([curView isDrawerView] && [navController.viewControllers count] > 1) {
+                [navController popWithAnimation];
+                return;
+            }
+        }
+    }
+    
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)cancelBackToPreviousViewController
+{
+	if (![self.navigationController isKindOfClass:[TSNavigatioController class]]) {
+        return;
+    }
+    
+    TSNavigatioController *navController = (TSNavigatioController *)self.navigationController;
+    [navController cancelPopWithAnimation];
+}
+
+@end
+
 @interface TSNavigatioController ()
 
 @end
@@ -72,17 +109,7 @@ static bool useIOS7Animation = YES;
 	return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+#pragma mark Push
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     UIView *curView = [self view];
@@ -119,13 +146,14 @@ static bool useIOS7Animation = YES;
 	[super pushViewController:viewController animated:animated];
 }
 
+#pragma mark Pop
+
 - (UIViewController *)popViewControllerAnimated:(BOOL)animated
 {
     UIViewController *poppedViewController;
     poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
-    UIViewController *lastController = [[self viewControllers] lastObject];
-    if ([lastController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *curViewController = (DrawerViewController *)lastController;
+    if ([self.topViewController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *curViewController = (DrawerViewController *)self.topViewController;
         if ([curViewController isDrawerView] && curViewController.backImage) {
             [self initBackImage:curViewController.backImage];
         }
@@ -142,9 +170,8 @@ static bool useIOS7Animation = YES;
 
 - (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
-    UIViewController *lastController = [[self viewControllers] lastObject];
-    if ([lastController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *curViewController = (DrawerViewController *)lastController;
+    if ([self.topViewController isKindOfClass:[DrawerViewController class]]) {
+        DrawerViewController *curViewController = (DrawerViewController *)self.topViewController;
         if ([curViewController isDrawerView] && curViewController.backImage) {
             [self initBackImage:curViewController.backImage];
         }
@@ -167,6 +194,33 @@ static bool useIOS7Animation = YES;
     }
 	return poppedViewController;
 }
+
+- (void)popWithAnimation
+{
+    isShowingAnimation = YES;
+    if (useIOS7Animation) {
+        isShowingAnimation = NO;
+        [self continuePopWithAnimation];
+        return;
+    }
+    _imageView.alpha = 0.6;
+    [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^(void){
+                         [self.view setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                         _imageView.alpha = 1.0;
+                         [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                     }completion:^(BOOL finish){
+                         [self.view setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                         isShowingAnimation = NO;
+                         [self popViewControllerAnimated:NO];
+                     }];
+    
+}
+
+#pragma mark Gesture
 
 - (void)HandlePan:(UIPanGestureRecognizer*)panGestureRecognizer{
     UIView *curView = [self view];
@@ -201,44 +255,79 @@ static bool useIOS7Animation = YES;
         }
         if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             if (translation.x > 100) {
-                [UIView animateWithDuration:0.3
-                                      delay:0
-                                    options:UIViewAnimationOptionCurveEaseInOut
-                                 animations:^(void){
-                                     [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                                     if (useIOS7Animation) {
-                                         [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                                     }
-                                     else {
-                                         _imageView.alpha = 1;
-                                         [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
-                                     }
-                                 }completion:^(BOOL finish){
-                                     [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                                     isShowingAnimation = NO;
-                                     [self popViewControllerAnimated:NO];
-                                 }];
-            }else{
-                [UIView animateWithDuration:0.2
-                                      delay:0
-                                    options:UIViewAnimationOptionCurveEaseInOut
-                                 animations:^(void){
-                                     [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                                     if (useIOS7Animation) {
-                                         [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
-                                     }
-                                     else {
-                                         _imageView.alpha = 0.95;
-                                         [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
-                                     }
-                                 }completion:^(BOOL finish){
-                                     [img_shadow removeFromSuperview];
-                                     isShowingAnimation = NO;
-                                 }];
+                [self.topViewController backToPreviousViewController];
+            } else {
+                [self cancelPopWithAnimation];
             }
         }
     }
 }
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (![self.topViewController isKindOfClass:[DrawerViewController class]]) {
+        return NO;
+    }
+    DrawerViewController *lastViewController = (DrawerViewController *)self.topViewController;
+    if (![lastViewController isDrawerView] || lastViewController.backImage == nil) {
+        return NO;
+    }
+    CGPoint translation = [_panGestureRecognier translationInView:self.imageView];
+    //    NSLog(@"x:%.2f", translation.x);
+    return translation.x > 0;
+}
+
+- (void)continuePopWithAnimation
+{
+    UIView *curView = [self view];
+    if (CGAffineTransformIsIdentity(curView.transform)) {
+        [self popViewControllerAnimated:YES];
+        return;
+    }
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^(void){
+                         [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                         if (useIOS7Animation) {
+                             [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                         }
+                         else {
+                             _imageView.alpha = 1;
+                             [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                         }
+                     }completion:^(BOOL finish){
+                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                         isShowingAnimation = NO;
+                         [self popViewControllerAnimated:NO];
+                     }];
+}
+
+- (void)cancelPopWithAnimation
+{
+    UIView *curView = [self view];
+    if (CGAffineTransformIsIdentity(curView.transform)) {
+        return;
+    }
+    [UIView animateWithDuration:0.2
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^(void){
+                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                         if (useIOS7Animation) {
+                             [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                         }
+                         else {
+                             _imageView.alpha = 0.95;
+                             [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                         }
+                     }completion:^(BOOL finish){
+                         isShowingAnimation = NO;
+                         [img_shadow removeFromSuperview];
+                     }];
+}
+
+#pragma mark initDrawerView
 
 - (void)initDrawerView:(DrawerViewController *)viewController
 {
@@ -274,18 +363,19 @@ static bool useIOS7Animation = YES;
     }
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+#pragma mark -
+#pragma mark View Life Methods
+
+- (void)viewDidLoad
 {
-    if (![[[self viewControllers] lastObject] isKindOfClass:[DrawerViewController class]]) {
-        return NO;
-    }
-    DrawerViewController *lastViewController = (DrawerViewController *)[[self viewControllers] lastObject];
-    if (![lastViewController isDrawerView] || lastViewController.backImage == nil) {
-        return NO;
-    }
-    CGPoint translation = [_panGestureRecognier translationInView:self.imageView];
-    //    NSLog(@"x:%.2f", translation.x);
-    return translation.x > 0;
+    [super viewDidLoad];
+	// Do any additional setup after loading the view.
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 
 - (void)dealloc
