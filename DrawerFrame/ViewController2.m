@@ -11,7 +11,9 @@
 #import "TSNavigatioController.h"
 #import "AppDelegate.h"
 
-@interface ViewController2 () <UITextFieldDelegate>
+@interface ViewController2 () <UITextFieldDelegate, UIAlertViewDelegate>
+
+@property (unsafe_unretained, nonatomic) IBOutlet UITextField *txtField;
 
 @end
 
@@ -61,12 +63,40 @@
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    self.view.transform = CGAffineTransformMakeTranslation(0, -200);
+    self.view.transform = CGAffineTransformMakeTranslation(0, -150);
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField
 {
     self.view.transform = CGAffineTransformIdentity;
+}
+
+- (void)backToPreviousViewController
+{
+    if (_txtField.text.length == 0) {
+        [_txtField resignFirstResponder];
+        
+        [super backToPreviousViewController];
+        return;
+    }
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您写的反馈还没有提交哦，是否继续编辑？" delegate:self cancelButtonTitle:nil otherButtonTitles:@"退出", nil ];
+    [alert addButtonWithTitle:@"继续编辑"];
+    alert.cancelButtonIndex = 1;
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+        case 0:
+            [super backToPreviousViewController];
+            break;
+            
+        default:
+            [self cancelBackToPreviousViewController];
+            break;
+    }
 }
 
 @end

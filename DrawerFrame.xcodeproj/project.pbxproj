@@ -101,7 +101,6 @@
 				2CBC1F2F170442BE00F52C15 /* ViewController.h */,
 				2CBC1F30170442BE00F52C15 /* ViewController.m */,
 				2CBC1F32170442BE00F52C15 /* ViewController.xib */,
-				2CBC1F1E170442BE00F52C15 /* Supporting Files */,
 				2CBC1F3A1704431300F52C15 /* ViewController2.h */,
 				2CBC1F3B1704431300F52C15 /* ViewController2.m */,
 				2CBC1F3C1704431300F52C15 /* ViewController2.xib */,
@@ -110,6 +109,7 @@
 				2CBC1F4B17056F8100F52C15 /* DrawerViewController.h */,
 				2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */,
 				2CBAB869180BCECB00CDBF2A /* border_Shadow.png */,
+				2CBC1F1E170442BE00F52C15 /* Supporting Files */,
 			);
 			path = DrawerFrame;
 			sourceTree = "<group>";

@@ -14,7 +14,7 @@
 @implementation UIViewController (NVNavigationController)
 
 - (UIBarButtonItem *)backBarButtonItem {
-    return [[UIBarButtonItem alloc] initWithTitle:@""
+    return [[UIBarButtonItem alloc] initWithTitle:@"返回"
                                      style:UIBarButtonItemStylePlain
                                     target:self
                                     action:@selector(backToPreviousViewController)];
@@ -112,6 +112,9 @@ static bool useIOS7Animation = YES;
 #pragma mark Push
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	if (self.viewControllers.count>0) {
+        [[viewController navigationItem] setLeftBarButtonItem:[viewController backBarButtonItem]];
+	}
     UIView *curView = [self view];
     [curView endEditing:YES];
 	
