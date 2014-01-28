@@ -7,7 +7,7 @@
 //
 
 #import "TSNavigatioController.h"
-#import "DrawerViewController.h"
+#import "UIViewController+DrawerView.h"
 #import "AppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -23,10 +23,8 @@
 - (void)backToPreviousViewController {
 	if ([self.navigationController isKindOfClass:[TSNavigatioController class]]) {
         TSNavigatioController *navController = (TSNavigatioController *)self.navigationController;
-        if ([self isKindOfClass:[DrawerViewController class]]) {
-            DrawerViewController *curView = (DrawerViewController *)self;
-            
-            if ([curView isDrawerView] && [navController.viewControllers count] > 1) {
+        if ([self respondsToSelector:@selector(isDrawerView)]) {
+            if ([self isDrawerView] && [navController.viewControllers count] > 1) {
                 [navController popWithAnimation];
                 return;
             }
@@ -118,19 +116,18 @@ static bool useIOS7Animation = YES;
     UIView *curView = [self view];
     [curView endEditing:YES];
 	
-	if ([viewController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *controller = (DrawerViewController *) viewController;
-        if ([controller isDrawerView] && [self.viewControllers count] > 0) {
-            [self initDrawerView:controller];
-            [self initBackImage:controller.backImage];
+	if ([viewController respondsToSelector:@selector(isDrawerView)]) {
+        if ([viewController isDrawerView] && [self.viewControllers count] > 0) {
+            [self initDrawerView:viewController];
+            [self initBackImage:viewController.backImage];
 
             if (animated) {
                 if (useIOS7Animation) {
-                    [super pushViewController:controller animated:YES];
+                    [super pushViewController:viewController animated:YES];
                 }
                 else {
                     [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                    [super pushViewController:controller animated:NO];
+                    [super pushViewController:viewController animated:NO];
                     [UIView animateWithDuration:0.3
                                           delay:0
                                         options:UIViewAnimationOptionCurveEaseInOut
@@ -155,8 +152,8 @@ static bool useIOS7Animation = YES;
 {
     UIViewController *poppedViewController;
     poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
-    if ([self.topViewController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *curViewController = (DrawerViewController *)self.topViewController;
+    if ([self.topViewController respondsToSelector:@selector(isDrawerView)]) {
+        UIViewController *curViewController = self.topViewController;
         if ([curViewController isDrawerView] && curViewController.backImage) {
             [self initBackImage:curViewController.backImage];
         }
@@ -173,8 +170,8 @@ static bool useIOS7Animation = YES;
 
 - (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
-    if ([self.topViewController isKindOfClass:[DrawerViewController class]]) {
-        DrawerViewController *curViewController = (DrawerViewController *)self.topViewController;
+    if ([self.topViewController respondsToSelector:@selector(isDrawerView)]) {
+        UIViewController *curViewController = self.topViewController;
         if ([curViewController isDrawerView] && curViewController.backImage) {
             [self initBackImage:curViewController.backImage];
         }
@@ -268,10 +265,10 @@ static bool useIOS7Animation = YES;
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    if (![self.topViewController isKindOfClass:[DrawerViewController class]]) {
+    if (![self.topViewController respondsToSelector:@selector(isDrawerView)]) {
         return NO;
     }
-    DrawerViewController *lastViewController = (DrawerViewController *)self.topViewController;
+    UIViewController *lastViewController = self.topViewController;
     if (![lastViewController isDrawerView] || lastViewController.backImage == nil) {
         return NO;
     }
@@ -332,7 +329,7 @@ static bool useIOS7Animation = YES;
 
 #pragma mark initDrawerView
 
-- (void)initDrawerView:(DrawerViewController *)viewController
+- (void)initDrawerView:(UIViewController *)viewController
 {
     UIView *curView = [self view];
     

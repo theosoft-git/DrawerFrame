@@ -10,14 +10,21 @@
 #import "ViewController.h"
 #import "TSNavigatioController.h"
 #import "AppDelegate.h"
+#import "UIViewController+DrawerView.h"
 
 @interface ViewController2 () <UITextFieldDelegate, UIAlertViewDelegate>
 
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *txtField;
+@property (unsafe_unretained, nonatomic) IBOutlet UISwitch *switch_isDrawerView;
 
 @end
 
 @implementation ViewController2
+
+- (BOOL)isDrawerView
+{
+    return [super isDrawerView] && (_switch_isDrawerView == nil ? YES : _switch_isDrawerView.on);
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

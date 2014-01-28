@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DrawerViewController.h"
 
-@interface ViewController : DrawerViewController
+@interface ViewController : UIViewController
 
 - (IBAction)go2nextPage:(id)sender;
 @end

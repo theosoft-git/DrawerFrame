@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DrawerViewController.h"
 
-@interface ViewController2 : DrawerViewController
+@interface ViewController2 : UIViewController
 
 - (IBAction)go2next:(id)sender;
 - (IBAction)popModelView:(id)sender;

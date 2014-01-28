@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C3378F318975AC2002962F8 /* UIViewController+DrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3378F218975AC2002962F8 /* UIViewController+DrawerView.m */; };
 		2CBAB86A180BCECB00CDBF2A /* border_Shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CBAB869180BCECB00CDBF2A /* border_Shadow.png */; };
 		2CBC1F18170442BE00F52C15 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CBC1F17170442BE00F52C15 /* UIKit.framework */; };
 		2CBC1F1A170442BE00F52C15 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CBC1F19170442BE00F52C15 /* Foundation.framework */; };
@@ -22,10 +23,11 @@
 		2CBC1F3D1704431300F52C15 /* ViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F3B1704431300F52C15 /* ViewController2.m */; };
 		2CBC1F3E1704431300F52C15 /* ViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CBC1F3C1704431300F52C15 /* ViewController2.xib */; };
 		2CBC1F411704452600F52C15 /* TSNavigatioController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F401704452600F52C15 /* TSNavigatioController.m */; };
-		2CBC1F4D17056F8200F52C15 /* DrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C3378F118975AC2002962F8 /* UIViewController+DrawerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+DrawerView.h"; sourceTree = "<group>"; };
+		2C3378F218975AC2002962F8 /* UIViewController+DrawerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+DrawerView.m"; sourceTree = "<group>"; };
 		2CBAB869180BCECB00CDBF2A /* border_Shadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = border_Shadow.png; sourceTree = "<group>"; };
 		2CBC1F14170442BE00F52C15 /* DrawerFrame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrawerFrame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CBC1F17170442BE00F52C15 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -48,8 +50,6 @@
 		2CBC1F3C1704431300F52C15 /* ViewController2.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController2.xib; sourceTree = "<group>"; };
 		2CBC1F3F1704452600F52C15 /* TSNavigatioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSNavigatioController.h; sourceTree = "<group>"; };
 		2CBC1F401704452600F52C15 /* TSNavigatioController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSNavigatioController.m; sourceTree = "<group>"; };
-		2CBC1F4B17056F8100F52C15 /* DrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawerViewController.h; sourceTree = "<group>"; };
-		2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawerViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,8 +106,8 @@
 				2CBC1F3C1704431300F52C15 /* ViewController2.xib */,
 				2CBC1F3F1704452600F52C15 /* TSNavigatioController.h */,
 				2CBC1F401704452600F52C15 /* TSNavigatioController.m */,
-				2CBC1F4B17056F8100F52C15 /* DrawerViewController.h */,
-				2CBC1F4C17056F8200F52C15 /* DrawerViewController.m */,
+				2C3378F118975AC2002962F8 /* UIViewController+DrawerView.h */,
+				2C3378F218975AC2002962F8 /* UIViewController+DrawerView.m */,
 				2CBAB869180BCECB00CDBF2A /* border_Shadow.png */,
 				2CBC1F1E170442BE00F52C15 /* Supporting Files */,
 			);
@@ -201,7 +201,7 @@
 				2CBC1F31170442BE00F52C15 /* ViewController.m in Sources */,
 				2CBC1F3D1704431300F52C15 /* ViewController2.m in Sources */,
 				2CBC1F411704452600F52C15 /* TSNavigatioController.m in Sources */,
-				2CBC1F4D17056F8200F52C15 /* DrawerViewController.m in Sources */,
+				2C3378F318975AC2002962F8 /* UIViewController+DrawerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
