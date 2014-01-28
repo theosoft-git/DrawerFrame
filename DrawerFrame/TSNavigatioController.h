@@ -20,6 +20,10 @@
 
 @interface UIViewController (NVNavigationController)
 
+@property (nonatomic, strong) UIImage *backImage;
+
+- (BOOL)isDrawerView;
+
 - (UIBarButtonItem *)backBarButtonItem;
 - (void)backToPreviousViewController;
 - (void)cancelBackToPreviousViewController;

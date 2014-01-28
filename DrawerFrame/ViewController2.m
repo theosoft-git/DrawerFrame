@@ -10,7 +10,6 @@
 #import "ViewController.h"
 #import "TSNavigatioController.h"
 #import "AppDelegate.h"
-#import "UIViewController+DrawerView.h"
 
 @interface ViewController2 () <UITextFieldDelegate, UIAlertViewDelegate>
 
@@ -87,7 +86,7 @@
         return;
     }
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您写的反馈还没有提交哦，是否继续编辑？" delegate:self cancelButtonTitle:nil otherButtonTitles:@"退出", nil ];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您写的内容还没有提交哦，是否继续编辑？" delegate:self cancelButtonTitle:nil otherButtonTitles:@"退出", nil ];
     [alert addButtonWithTitle:@"继续编辑"];
     alert.cancelButtonIndex = 1;
     [alert show];
