@@ -254,10 +254,12 @@ static bool useIOS7Animation = YES;
 //                curView.layer.shadowOffset = CGSizeMake(-4, 0);
 //                curView.layer.shadowColor = [[UIColor blackColor] CGColor];
 //                curView.layer.shadowOpacity = 0.5;
-                CGRect screenFrame = [[UIScreen mainScreen] bounds];
-                curView.clipsToBounds = NO;
-                [curView addSubview:img_shadow];
-                [img_shadow setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
+                if (!img_shadow.superview) {
+                    CGRect screenFrame = [[UIScreen mainScreen] bounds];
+                    curView.clipsToBounds = NO;
+                    [curView addSubview:img_shadow];
+                    [img_shadow setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
+                }
             }
             
             [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
@@ -342,7 +344,6 @@ static bool useIOS7Animation = YES;
                          }
                      }completion:^(BOOL finish){
                          isShowingAnimation = NO;
-                         [img_shadow removeFromSuperview];
                      }];
 }
 
