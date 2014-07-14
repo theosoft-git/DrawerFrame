@@ -17,7 +17,7 @@
 
 @property (strong, nonatomic) ViewController *viewController;
 
-@property (strong, nonatomic) TSNavigatioController *navigationController;
+@property (strong, nonatomic) TSNavigationController *navigationController;
 
 + (AppDelegate *)instance;
 

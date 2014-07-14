@@ -58,7 +58,7 @@
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleDone target:self action:@selector(CloseModel)];
     [[debugPanel navigationItem] setLeftBarButtonItem:cancel];
     
-    TSNavigatioController *navController = [[TSNavigatioController alloc] initWithRootViewController:debugPanel];
+    TSNavigationController *navController = [[TSNavigationController alloc] initWithRootViewController:debugPanel];
     [[AppDelegate instance].viewController presentModalViewController:navController animated:YES];
 }
 

@@ -32,6 +32,16 @@ static char const * const BackImageTag = "BackImageTag";
     return YES;     //黑名单制，不需要支持的页面请返回NO；也可以将这里改为NO，成为白名单制
 }
 
+- (BOOL)canSlideBack
+{
+    return [self isDrawerView];
+}
+
+- (TSNavigationStyle)navigationStyle
+{
+    return TSNavigationStyleIOS7;
+}
+
 - (UIBarButtonItem *)backBarButtonItem {
     return [[UIBarButtonItem alloc] initWithTitle:@"返回"
                                      style:UIBarButtonItemStylePlain
@@ -40,57 +50,63 @@ static char const * const BackImageTag = "BackImageTag";
 }
 
 - (void)backToPreviousViewController {
-	if ([self.navigationController isKindOfClass:[TSNavigatioController class]]) {
-        TSNavigatioController *navController = (TSNavigatioController *)self.navigationController;
-        if ([self respondsToSelector:@selector(isDrawerView)]) {
-            if ([self isDrawerView] && [navController.viewControllers count] > 1) {
-                [navController popWithAnimation];
-                return;
-            }
+	UINavigationController *naviController = nil;
+	if (self.navigationController) {
+		naviController = self.navigationController;
+	} else {
+		naviController = [[AppDelegate instance] navigationController];
+	}
+    
+	if ([naviController isKindOfClass:[TSNavigationController class]]) {
+        TSNavigationController *nvNavController = (TSNavigationController *)naviController;
+        if ([self isDrawerView] && self.backImage != nil && [naviController.viewControllers count] > 1) {
+            [nvNavController popViewControllerAnimated:YES];
+            return;
         }
     }
     
-	[self.navigationController popViewControllerAnimated:YES];
+	[naviController popViewControllerAnimated:YES];
 }
 
 - (void)cancelBackToPreviousViewController
 {
-	if (![self.navigationController isKindOfClass:[TSNavigatioController class]]) {
+	UINavigationController *naviController = nil;
+	if (self.navigationController) {
+		naviController = self.navigationController;
+	} else {
+		naviController = [[AppDelegate instance] navigationController];
+	}
+    
+	if (![naviController isKindOfClass:[TSNavigationController class]]) {
         return;
     }
     
-    TSNavigatioController *navController = (TSNavigatioController *)self.navigationController;
+    TSNavigationController *navController = (TSNavigationController *)self.navigationController;
     [navController cancelPopWithAnimation];
 }
 
 @end
 
-@interface TSNavigatioController ()
+@interface TSNavigationController ()
 
 @end
 
-@implementation TSNavigatioController
+@implementation TSNavigationController
 {
-    BOOL                    isShowingAnimation;
-    UIImageView             *img_shadow;
-    UIPanGestureRecognizer  *_panGestureRecognier;
+    BOOL                        _isShowingAnimation;
+    UIImageView                 *_img_shadow_left;
+    UIImageView                 *_img_shadow_up;
+    UIImageView                 *_img_shadow_down;
+    UIImageView                 *_img_shadow_right;
+    UIPanGestureRecognizer      *_panGestureRecognier;
+    UIView                      *_backgroundView;
 }
-
-//Whether to use iOS7 style animation
-static bool useIOS7Animation = YES;
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        if (!_panGestureRecognier) {
-            _panGestureRecognier = [[UIPanGestureRecognizer alloc]
-                                    initWithTarget:self
-                                    action:@selector(HandlePan:)];
-            _panGestureRecognier.delegate = self;
-            [self.view addGestureRecognizer:_panGestureRecognier];
-            img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
-        }
+        [self setupView];
     }
     return self;
 }
@@ -99,14 +115,7 @@ static bool useIOS7Animation = YES;
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        if (!_panGestureRecognier) {
-            _panGestureRecognier = [[UIPanGestureRecognizer alloc]
-                                    initWithTarget:self
-                                    action:@selector(HandlePan:)];
-            _panGestureRecognier.delegate = self;
-            [self.view addGestureRecognizer:_panGestureRecognier];
-            img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
-        }
+        [self setupView];
     }
     return self;
 }
@@ -114,16 +123,29 @@ static bool useIOS7Animation = YES;
 - (id)initWithRootViewController:(UIViewController *)rootViewController {
 	self = [super initWithRootViewController:rootViewController];
 	if (self) {
-        if (!_panGestureRecognier) {
-            _panGestureRecognier = [[UIPanGestureRecognizer alloc]
-                                                           initWithTarget:self
-                                                           action:@selector(HandlePan:)];
-            _panGestureRecognier.delegate = self;
-            [self.view addGestureRecognizer:_panGestureRecognier];
-            img_shadow = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
-        }
+        [self setupView];
 	}
 	return self;
+}
+
+- (void)setupView
+{
+    if (!_panGestureRecognier) {
+        _panGestureRecognier = [[UIPanGestureRecognizer alloc]
+                                initWithTarget:self
+                                action:@selector(HandlePan:)];
+        _panGestureRecognier.delegate = self;
+        [self.view addGestureRecognizer:_panGestureRecognier];
+        
+        _img_shadow_left = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"border_Shadow"]];
+        _img_shadow_up = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"list_screen_shadow_up"]];
+        _img_shadow_down = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"list_screen_shadow_down"]];
+        _img_shadow_right = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"list_screen_shadow_right"] stretchableImageWithLeftCapWidth:0 topCapHeight:36]];
+        
+        _backgroundView = [[UIView alloc] initWithFrame:self.view.frame];
+        _backgroundView.backgroundColor = [UIColor blackColor];
+        [self.view insertSubview:_backgroundView atIndex:0];
+    }
 }
 
 #pragma mark Push
@@ -139,26 +161,65 @@ static bool useIOS7Animation = YES;
         if ([viewController isDrawerView] && [self.viewControllers count] > 0) {
             [self initDrawerView:viewController];
             [self initBackImage:viewController.backImage];
-
-            if (animated) {
-                if (useIOS7Animation) {
-                    [super pushViewController:viewController animated:YES];
-                }
-                else {
-                    [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                    [super pushViewController:viewController animated:NO];
-                    [UIView animateWithDuration:0.3
-                                          delay:0
-                                        options:UIViewAnimationOptionCurveEaseInOut
-                                     animations:^(void){
-                                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                                         [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
-                                         _imageView.alpha = 0.6;
-                                     }completion:^(BOOL finish){
-                                     }];
-                }
-                return;
+            _tsDelegate = viewController;
+            
+            if (_imageView.image == nil) {
+                [super pushViewController:viewController animated:YES];
             }
+            else {
+                if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationWillShow:)]) {
+                    [_tsDelegate drawerAnimationWillShow:self];
+                }
+                _isShowingAnimation = YES;
+                switch ([viewController navigationStyle]) {
+                    case TSNavigationStyleIOS7:
+                    case TSNavigationStyleDrawer:
+                        [_imageView removeFromSuperview];
+                        [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+                        [self removeRightShadow];
+                        [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                        break;
+                    case TSNavigationStyleCascade:
+                        [_imageView removeFromSuperview];
+                        [[[AppDelegate instance] window] addSubview:_imageView];
+                        [self addRightShadow];
+                        break;
+                        
+                    default:
+                        break;
+                }
+                [super pushViewController:viewController animated:NO];
+                [UIView animateWithDuration:0.25
+                                      delay:0
+                                    options:UIViewAnimationOptionCurveEaseInOut
+                                 animations:^(void) {
+                                     switch ([viewController navigationStyle]) {
+                                         case TSNavigationStyleIOS7:
+                                             [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                                             [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                             break;
+                                         case TSNavigationStyleDrawer:
+                                             [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                             _imageView.alpha = 0.6;
+                                             [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                             break;
+                                         case TSNavigationStyleCascade:
+                                             [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
+                                             break;
+                                             
+                                         default:
+                                             break;
+                                     }
+                                 }
+                                 completion:^(BOOL finish) {
+                                     _isShowingAnimation = NO;
+                                     if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
+                                         [_tsDelegate drawerAnimationDidEnd:self];
+                                     }
+                                 }
+                 ];
+            }
+            return;
         }
     }
 	
@@ -167,76 +228,219 @@ static bool useIOS7Animation = YES;
 
 #pragma mark Pop
 
-- (UIViewController *)popViewControllerAnimated:(BOOL)animated
+- (void)preparePopAnimation:(UIImage *)image
 {
-    UIViewController *poppedViewController;
-    poppedViewController = (UIViewController *)[super popViewControllerAnimated:animated];
-    if ([self.topViewController respondsToSelector:@selector(isDrawerView)]) {
-        UIViewController *curViewController = self.topViewController;
-        if ([curViewController isDrawerView] && curViewController.backImage) {
-            [self initBackImage:curViewController.backImage];
+    if (image != nil) {
+        _imageView.image = image;
+    }
+    UIViewController *viewController = [self topViewController];
+    switch ([viewController navigationStyle]) {
+        case TSNavigationStyleIOS7: {
+            if (CGAffineTransformIsIdentity(_imageView.transform)) {
+                [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+            }
+            break;
         }
-        else if (_imageView) {
-            [_imageView setImage:nil];
+        case TSNavigationStyleDrawer: {
+            if (CGAffineTransformIsIdentity(_imageView.transform)) {
+                _imageView.alpha = 0.6;
+                [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+            }
+            break;
+        }
+        case TSNavigationStyleCascade:
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (UIViewController*)popViewControllerAnimated:(BOOL)animated {
+    if ([self presentedViewController]) {
+        // 模态情况下禁止返回
+        return nil;
+    }
+	UIViewController *returnController = nil;
+	
+    if (animated && [self.topViewController isDrawerView]) {
+        [self preparePopAnimation:nil];
+        if (_imageView.image == nil) {
+            returnController = [super popViewControllerAnimated:animated];
+        }
+        else {
+            returnController = self.topViewController;
+            [self continuePopWithAnimation];
         }
     }
-    if ([[self viewControllers] count] == 1 && _imageView) {
-        [_imageView removeFromSuperview];
-        _imageView = nil;
+    else {
+        returnController = [super popViewControllerAnimated:animated];
+        if (self.topViewController.backImage) {
+            _imageView.image = self.topViewController.backImage;
+        }
     }
-    return poppedViewController;
+    
+	return returnController;
 }
 
 - (NSArray *)popToViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	NSArray *poppedViewController = [super popToViewController:viewController animated:animated];
-    if ([self.topViewController respondsToSelector:@selector(isDrawerView)]) {
-        UIViewController *curViewController = self.topViewController;
-        if ([curViewController isDrawerView] && curViewController.backImage) {
-            [self initBackImage:curViewController.backImage];
+    if ([self presentedViewController]) {
+        // 模态情况下禁止返回
+        return nil;
+    }
+	NSArray *returnControllers = nil;
+	
+    if (animated && [self.topViewController isDrawerView]) {
+        UIImage *image = nil;
+        NSMutableArray *popedVC = [[NSMutableArray alloc] init];
+        for (int i = self.viewControllers.count - 1; i >= 0; i--) {
+            if (self.viewControllers[i] != viewController) {
+                [popedVC addObject:self.viewControllers[i]];
+            }
+            else {
+                image = ((UIViewController *)[popedVC lastObject]).backImage;
+                break;
+            }
         }
-        else if (_imageView) {
-            [_imageView setImage:nil];
+        returnControllers = [NSArray arrayWithArray:popedVC];
+        [self preparePopAnimation:image];
+        if (_imageView.image == nil) {
+            returnControllers = [super popToViewController:viewController animated:animated];
+            if (self.topViewController.backImage) {
+                _imageView.image = self.topViewController.backImage;
+            }
+        }
+        else {
+            [self continuePopWithAnimation:^(BOOL animated){
+                [self popToViewController:viewController animated:animated];
+            }];
         }
     }
-    if ([[self viewControllers] count] == 1 && _imageView) {
-        [_imageView removeFromSuperview];
-        _imageView = nil;
+    else {
+        returnControllers = [super popToViewController:viewController animated:animated];
     }
-	return poppedViewController;
+    
+	return returnControllers;
 }
 
 - (NSArray *)popToRootViewControllerAnimated:(BOOL)animated {
-	NSArray *poppedViewController = [super popToRootViewControllerAnimated:animated];
-    if (_imageView) {
-        [_imageView removeFromSuperview];
-        _imageView = nil;
+    if ([self presentedViewController]) {
+        // 模态情况下禁止返回
+        return nil;
     }
-	return poppedViewController;
+	NSArray *returnControllers = nil;
+	
+    if (animated && [self.topViewController isDrawerView]) {
+        UIImage *image = nil;
+        NSMutableArray *popedVC = [[NSMutableArray alloc] init];
+        for (int i = self.viewControllers.count - 1; i > 0; i--) {
+            [popedVC addObject:self.viewControllers[i]];
+        }
+        returnControllers = [NSArray arrayWithArray:popedVC];
+        image = ((UIViewController *)[popedVC lastObject]).backImage;
+        [self preparePopAnimation:image];
+        if (_imageView.image == nil) {
+            returnControllers = [super popToRootViewControllerAnimated:animated];
+        }
+        else {
+            [self continuePopWithAnimation:^(BOOL animated){
+                [self popToRootViewControllerAnimated:animated];
+            }];
+        }
+    }
+    else {
+        returnControllers = [super popToRootViewControllerAnimated:animated];
+    }
+	
+	return returnControllers;
 }
 
-- (void)popWithAnimation
+#pragma mark Push
+
+- (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated
 {
-    isShowingAnimation = YES;
-    if (useIOS7Animation) {
-        isShowingAnimation = NO;
-        [self continuePopWithAnimation];
-        return;
+    NSArray *oldArray = self.viewControllers;
+    for (int i = viewControllers.count - 1; i > 0; i--) {
+        UIViewController *curVC = viewControllers[i];
+        UIViewController *preVC = self.viewControllers[i - 1];
+        int index = [oldArray indexOfObject:preVC];
+        if (index >= 0 && index < oldArray.count - 1) {
+            UIViewController *lastVC = oldArray[index + 1];
+            curVC.backImage = lastVC.backImage;
+        }
     }
-    _imageView.alpha = 0.6;
-    [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
-    [UIView animateWithDuration:0.3
-                          delay:0
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^(void){
-                         [self.view setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                         _imageView.alpha = 1.0;
-                         [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
-                     }completion:^(BOOL finish){
-                         [self.view setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                         isShowingAnimation = NO;
-                         [self popViewControllerAnimated:NO];
-                     }];
     
+    UIViewController *curLastVC = [viewControllers lastObject];
+    
+    if (animated && [curLastVC isDrawerView]) {
+        UIViewController *oldLastVC = [oldArray lastObject];
+        [self initDrawerView:oldLastVC];
+        [self initBackImage:oldLastVC.backImage];
+        
+        UIView *curView = [self view];
+        if (oldLastVC.backImage != nil) {
+            if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationWillShow:)]) {
+                [_tsDelegate drawerAnimationWillShow:self];
+            }
+            _isShowingAnimation = YES;
+            switch ([curLastVC navigationStyle]) {
+                case TSNavigationStyleIOS7:
+                case TSNavigationStyleDrawer:
+                    [_imageView removeFromSuperview];
+                    [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+                    [self removeRightShadow];
+                    [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                    break;
+                case TSNavigationStyleCascade:
+                    [_imageView removeFromSuperview];
+                    [[[AppDelegate instance] window] addSubview:_imageView];
+                    [self addRightShadow];
+                    break;
+                    
+                default:
+                    break;
+            }
+            [super setViewControllers:viewControllers animated:NO];
+            [UIView animateWithDuration:0.25
+                                  delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+                             animations:^(void) {
+                                 switch ([curLastVC navigationStyle]) {
+                                     case TSNavigationStyleIOS7:
+                                         [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                         break;
+                                     case TSNavigationStyleDrawer:
+                                         [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                         _imageView.alpha = 0.6;
+                                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                         break;
+                                     case TSNavigationStyleCascade:
+                                         [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
+                                         break;
+                                         
+                                     default:
+                                         break;
+                                 }
+                             }
+                             completion:^(BOOL finish) {
+                                 _imageView.image = self.topViewController.backImage;
+                                 _isShowingAnimation = NO;
+                                 if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
+                                     [_tsDelegate drawerAnimationDidEnd:self];
+                                 }
+                             }
+             ];
+            return;
+        }
+    }
+    else {
+        [self initBackImage:curLastVC.backImage];
+    }
+    [super setViewControllers:viewControllers animated:animated];
+    if (self.topViewController.backImage) {
+        _imageView.image = self.topViewController.backImage;
+    }
 }
 
 #pragma mark Gesture
@@ -245,39 +449,53 @@ static bool useIOS7Animation = YES;
     UIView *curView = [self view];
     
     CGPoint translation = [panGestureRecognizer translationInView:self.imageView];
-//    NSLog(@"x:%.2f", translation.x);
+    //    NSLog(@"x:%.2f", translation.x);
     
     if ([[self viewControllers] count] > 1) {
         if (translation.x > 0) {
-            if (!isShowingAnimation) {
-                isShowingAnimation = YES;
-//                curView.layer.shadowOffset = CGSizeMake(-4, 0);
-//                curView.layer.shadowColor = [[UIColor blackColor] CGColor];
-//                curView.layer.shadowOpacity = 0.5;
-                if (!img_shadow.superview) {
+            if (!_isShowingAnimation) {
+                if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationWillShow:)]) {
+                    [_tsDelegate drawerAnimationWillShow:self];
+                }
+                _isShowingAnimation = YES;
+                if (!_img_shadow_left.superview) {
                     CGRect screenFrame = [[UIScreen mainScreen] bounds];
                     curView.clipsToBounds = NO;
-                    [curView addSubview:img_shadow];
-                    [img_shadow setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
+                    [curView addSubview:_img_shadow_left];
+                    [_img_shadow_left setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
                 }
             }
             
-            [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
-            if (useIOS7Animation) {
-                double translatedX = translation.x / 2.0f - 160;
-                [_imageView setTransform:CGAffineTransformMakeTranslation(translatedX, 0)];
-            }
-            else {
-                double scale = MIN(1.0f, 0.95 + translation.x / 4000);
-                [_imageView setTransform:CGAffineTransformMakeScale(scale, scale)];
-                double alpha = MIN(1.0f, 0.6 + translation.x / 500);
-                _imageView.alpha = alpha;
+            UIViewController *viewController = [self topViewController];
+            switch ([viewController navigationStyle]) {
+                case TSNavigationStyleIOS7: {
+                    double translatedX = translation.x / 2.0f - 160;
+                    [_imageView setTransform:CGAffineTransformMakeTranslation(translatedX, 0)];
+                    [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
+                    break;
+                }
+                case TSNavigationStyleDrawer: {
+                    double scale = MIN(1.0f, 0.95 + translation.x / 4000);
+                    [_imageView setTransform:CGAffineTransformMakeScale(scale, scale)];
+                    double alpha = MIN(1.0f, 0.6 + translation.x / 500);
+                    _imageView.alpha = alpha;
+                    [curView setTransform:CGAffineTransformMakeTranslation(translation.x, 0)];
+                    break;
+                }
+                case TSNavigationStyleCascade: {
+                    double scale = MIN(1.0f, 0.75f + translation.x / 320 * 0.25f);
+                    [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(scale, scale), CGAffineTransformMakeTranslation(translation.x - 320 + 80, 0))];
+                    break;
+                }
+                    
+                default:
+                    break;
             }
         }
         if (panGestureRecognizer.state == UIGestureRecognizerStateEnded) {
             if (translation.x > 100) {
                 [self.topViewController backToPreviousViewController];
-            } else {
+            }else{
                 [self cancelPopWithAnimation];
             }
         }
@@ -290,7 +508,7 @@ static bool useIOS7Animation = YES;
         return NO;
     }
     UIViewController *lastViewController = self.topViewController;
-    if (![lastViewController isDrawerView] || lastViewController.backImage == nil) {
+    if (![lastViewController isDrawerView] || ![lastViewController canSlideBack] || lastViewController.backImage == nil || _imageView == nil || _imageView.image == nil) {
         return NO;
     }
     CGPoint translation = [_panGestureRecognier translationInView:self.imageView];
@@ -300,50 +518,140 @@ static bool useIOS7Animation = YES;
 
 - (void)continuePopWithAnimation
 {
+    [self continuePopWithAnimation:^(BOOL animated) {
+        [self popViewControllerAnimated:animated];
+    }];
+}
+
+- (void)continuePopWithAnimation:(void(^)(BOOL animated))action
+{
     UIView *curView = [self view];
-    if (CGAffineTransformIsIdentity(curView.transform)) {
-        [self popViewControllerAnimated:YES];
+    UIViewController *viewController = [self topViewController];
+    if (_imageView.image == nil) {
+        _isShowingAnimation = NO;
+        action(YES);
         return;
     }
-    [UIView animateWithDuration:0.3
+    if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationWillShow:)]) {
+        [_tsDelegate drawerAnimationWillShow:self];
+    }
+    _isShowingAnimation = YES;
+    [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^(void){
-                         [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
-                         if (useIOS7Animation) {
-                             [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                         }
-                         else {
-                             _imageView.alpha = 1;
-                             [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                         switch ([viewController navigationStyle]) {
+                             case TSNavigationStyleIOS7:
+                                 [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                 [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                                 break;
+                             case TSNavigationStyleDrawer:
+                                 _imageView.alpha = 1;
+                                 [_imageView setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                 [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                                 break;
+                             case TSNavigationStyleCascade:
+                                 [_imageView setTransform:CGAffineTransformIdentity];
+                                 break;
+                                 
+                             default:
+                                 break;
                          }
                      }completion:^(BOOL finish){
                          [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                         isShowingAnimation = NO;
-                         [self popViewControllerAnimated:NO];
+                         action(NO);
+                         UIViewController *viewController = [self topViewController];
+                         _tsDelegate = viewController;
+                         switch ([viewController navigationStyle]) {
+                             case TSNavigationStyleIOS7:
+                             case TSNavigationStyleDrawer:
+                                 [_imageView removeFromSuperview];
+                                 [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+                                 [self removeRightShadow];
+                                 _isShowingAnimation = NO;
+                                 _imageView.image = viewController.backImage;
+                                 if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
+                                     [_tsDelegate drawerAnimationDidEnd:self];
+                                 }
+                                 break;
+                             case TSNavigationStyleCascade: {
+                                 [_imageView removeFromSuperview];
+                                 [[[AppDelegate instance] window] addSubview:_imageView];
+                                 if (self.viewControllers.count == 1) {
+                                     _isShowingAnimation = NO;
+                                     if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
+                                         [_tsDelegate drawerAnimationDidEnd:self];
+                                     }
+                                     return;
+                                 }
+                                 [self addRightShadow];
+                                 [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.67, 0.67), CGAffineTransformMakeTranslation(-320, 0))];
+                                 [UIView animateWithDuration:0.25
+                                                       delay:0
+                                                     options:UIViewAnimationOptionCurveEaseInOut
+                                                  animations:^(void){
+                                                      switch ([viewController navigationStyle]) {
+                                                          case TSNavigationStyleIOS7:
+                                                              break;
+                                                          case TSNavigationStyleDrawer:
+                                                              break;
+                                                          case TSNavigationStyleCascade:
+                                                              [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
+                                                              break;
+                                                              
+                                                          default:
+                                                              break;
+                                                      }
+                                                  } completion:^(BOOL finish){
+                                                      _isShowingAnimation = NO;
+                                                      _imageView.image = viewController.backImage;
+                                                      if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
+                                                          [_tsDelegate drawerAnimationDidEnd:self];
+                                                      }
+                                                  }];
+                                 break;
+                             }
+                                 
+                             default:
+                                 _isShowingAnimation = NO;
+                                 break;
+                         }
                      }];
 }
 
 - (void)cancelPopWithAnimation
 {
     UIView *curView = [self view];
-    if (CGAffineTransformIsIdentity(curView.transform)) {
+    UIViewController *viewController = [self topViewController];
+    if ([viewController navigationStyle] != TSNavigationStyleCascade && CGAffineTransformIsIdentity(curView.transform)) {
         return;
     }
     [UIView animateWithDuration:0.2
                           delay:0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^(void){
-                         [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
-                         if (useIOS7Animation) {
-                             [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
-                         }
-                         else {
-                             _imageView.alpha = 0.95;
-                             [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                         switch ([viewController navigationStyle]) {
+                             case TSNavigationStyleIOS7:
+                                 [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                                 [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                 break;
+                             case TSNavigationStyleDrawer:
+                                 _imageView.alpha = 0.95;
+                                 [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
+                                 [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                 break;
+                             case TSNavigationStyleCascade:
+                                 [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
+                                 break;
+                                 
+                             default:
+                                 break;
                          }
                      }completion:^(BOOL finish){
-                         isShowingAnimation = NO;
+                         _isShowingAnimation = NO;
+                         if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
+                             [_tsDelegate drawerAnimationDidEnd:self];
+                         }
                      }];
 }
 
@@ -381,6 +689,24 @@ static bool useIOS7Animation = YES;
         _imageView.alpha = 1;
         [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
     }
+}
+
+- (void)addRightShadow
+{
+    _imageView.clipsToBounds = NO;
+    _img_shadow_up.frame = CGRectMake(0, -36, _imageView.frame.size.width, 36);
+    [_imageView addSubview:_img_shadow_up];
+    _img_shadow_down.frame = CGRectMake(0, _imageView.frame.size.height, _imageView.frame.size.width, 36);
+    [_imageView addSubview:_img_shadow_down];
+    _img_shadow_right.frame = CGRectMake(_imageView.frame.size.width, -36, 20, _imageView.frame.size.height + 36 * 2);
+    [_imageView addSubview:_img_shadow_right];
+}
+
+- (void)removeRightShadow
+{
+    [_img_shadow_down removeFromSuperview];
+    [_img_shadow_right removeFromSuperview];
+    [_img_shadow_up removeFromSuperview];
 }
 
 #pragma mark -

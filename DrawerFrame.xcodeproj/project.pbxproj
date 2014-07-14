@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C7F06851973DE6B00A6CF9D /* list_screen_shadow_down@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C7F06821973DE6B00A6CF9D /* list_screen_shadow_down@2x.png */; };
+		2C7F06861973DE6B00A6CF9D /* list_screen_shadow_right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C7F06831973DE6B00A6CF9D /* list_screen_shadow_right@2x.png */; };
+		2C7F06871973DE6B00A6CF9D /* list_screen_shadow_up@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C7F06841973DE6B00A6CF9D /* list_screen_shadow_up@2x.png */; };
 		2CBAB86A180BCECB00CDBF2A /* border_Shadow.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CBAB869180BCECB00CDBF2A /* border_Shadow.png */; };
 		2CBC1F18170442BE00F52C15 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CBC1F17170442BE00F52C15 /* UIKit.framework */; };
 		2CBC1F1A170442BE00F52C15 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CBC1F19170442BE00F52C15 /* Foundation.framework */; };
@@ -25,6 +28,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C7F06821973DE6B00A6CF9D /* list_screen_shadow_down@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_screen_shadow_down@2x.png"; sourceTree = "<group>"; };
+		2C7F06831973DE6B00A6CF9D /* list_screen_shadow_right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_screen_shadow_right@2x.png"; sourceTree = "<group>"; };
+		2C7F06841973DE6B00A6CF9D /* list_screen_shadow_up@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "list_screen_shadow_up@2x.png"; sourceTree = "<group>"; };
 		2CBAB869180BCECB00CDBF2A /* border_Shadow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = border_Shadow.png; sourceTree = "<group>"; };
 		2CBC1F14170442BE00F52C15 /* DrawerFrame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrawerFrame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CBC1F17170442BE00F52C15 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -63,6 +69,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2C7F06811973DE5D00A6CF9D /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				2CBAB869180BCECB00CDBF2A /* border_Shadow.png */,
+				2C7F06821973DE6B00A6CF9D /* list_screen_shadow_down@2x.png */,
+				2C7F06831973DE6B00A6CF9D /* list_screen_shadow_right@2x.png */,
+				2C7F06841973DE6B00A6CF9D /* list_screen_shadow_up@2x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		2CBC1F0B170442BE00F52C15 = {
 			isa = PBXGroup;
 			children = (
@@ -93,6 +110,7 @@
 		2CBC1F1D170442BE00F52C15 /* DrawerFrame */ = {
 			isa = PBXGroup;
 			children = (
+				2C7F06811973DE5D00A6CF9D /* Images */,
 				2CBC1F26170442BE00F52C15 /* AppDelegate.h */,
 				2CBC1F27170442BE00F52C15 /* AppDelegate.m */,
 				2CBC1F2F170442BE00F52C15 /* ViewController.h */,
@@ -103,7 +121,6 @@
 				2CBC1F3C1704431300F52C15 /* ViewController2.xib */,
 				2CBC1F3F1704452600F52C15 /* TSNavigatioController.h */,
 				2CBC1F401704452600F52C15 /* TSNavigatioController.m */,
-				2CBAB869180BCECB00CDBF2A /* border_Shadow.png */,
 				2CBC1F1E170442BE00F52C15 /* Supporting Files */,
 			);
 			path = DrawerFrame;
@@ -174,8 +191,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C7F06861973DE6B00A6CF9D /* list_screen_shadow_right@2x.png in Resources */,
 				2CBC1F22170442BE00F52C15 /* InfoPlist.strings in Resources */,
 				2CBC1F2A170442BE00F52C15 /* Default.png in Resources */,
+				2C7F06871973DE6B00A6CF9D /* list_screen_shadow_up@2x.png in Resources */,
+				2C7F06851973DE6B00A6CF9D /* list_screen_shadow_down@2x.png in Resources */,
 				2CBC1F2C170442BE00F52C15 /* Default@2x.png in Resources */,
 				2CBAB86A180BCECB00CDBF2A /* border_Shadow.png in Resources */,
 				2CBC1F2E170442BE00F52C15 /* Default-568h@2x.png in Resources */,
@@ -280,10 +300,14 @@
 		2CBC1F38170442BE00F52C15 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					"$(ARCHS_STANDARD_32BIT)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DrawerFrame/DrawerFrame-Prefix.pch";
 				INFOPLIST_FILE = "DrawerFrame/DrawerFrame-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -292,10 +316,14 @@
 		2CBC1F39170442BE00F52C15 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					"$(ARCHS_STANDARD_32BIT)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DrawerFrame/DrawerFrame-Prefix.pch";
 				INFOPLIST_FILE = "DrawerFrame/DrawerFrame-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

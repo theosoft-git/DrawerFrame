@@ -8,21 +8,41 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TSNavigatioController : UINavigationController <UIGestureRecognizerDelegate>
+typedef enum {
+    TSNavigationStyleIOS7,
+    TSNavigationStyleDrawer,
+    TSNavigationStyleCascade
+} TSNavigationStyle;
+
+@class TSNavigationController;
+@protocol TSDrawerFrameDelegate <NSObject>
+
+@optional
+- (void)drawerAnimationWillShow:(TSNavigationController *)navigationController;
+- (void)drawerAnimationDidEnd:(TSNavigationController *)navigationController;
+
+@end
+
+@interface TSNavigationController : UINavigationController <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, weak) id<TSDrawerFrameDelegate> tsDelegate;
 
-- (void)popWithAnimation;
 - (void)continuePopWithAnimation;
 - (void)cancelPopWithAnimation;
 
 @end
 
-@interface UIViewController (NVNavigationController)
+@interface UIViewController (NVNavigationController) <TSDrawerFrameDelegate>
 
 @property (nonatomic, strong) UIImage *backImage;
 
+//是否支持抽屉视图。
 - (BOOL)isDrawerView;
+//是否允许滑动返回。
+- (BOOL)canSlideBack;
+
+- (TSNavigationStyle)navigationStyle;
 
 - (UIBarButtonItem *)backBarButtonItem;
 - (void)backToPreviousViewController;
