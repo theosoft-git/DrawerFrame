@@ -385,7 +385,7 @@ static char const * const BackImageTag = "BackImageTag";
 	return returnControllers;
 }
 
-#pragma mark Push
+#pragma mark Set
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated
 {
