@@ -149,10 +149,25 @@ static char const * const BackImageTag = "BackImageTag";
     }
 }
 
+- (void)setNeedPop2Root:(BOOL)needPop2Root
+{
+    _needPop2Root = needPop2Root;
+    if (_needPop2Root) {
+        __weak __typeof(&*self) weakSelf = self;
+        _preAction = ^NSArray *{
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            return [strongSelf popToRootViewControllerAnimated:NO];
+        };
+    }
+    else {
+        _preAction = NULL;
+    }
+}
+
 #pragma mark Push
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	if (self.viewControllers.count>0) {
+	if (self.viewControllers.count > 0) {
         [[viewController navigationItem] setLeftBarButtonItem:[viewController backBarButtonItem]];
 	}
     UIView *curView = [self view];

@@ -29,6 +29,8 @@ typedef enum {
 @property (nonatomic, weak) id<TSDrawerFrameDelegate> tsDelegate;
 
 @property (nonatomic, copy) NSArray * (^preAction)();
+@property (nonatomic, assign) BOOL  needPop2Root;
+
 - (void)continuePopWithAnimation;
 - (void)cancelPopWithAnimation;
 
