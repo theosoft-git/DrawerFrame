@@ -393,6 +393,9 @@ static char const * const BackImageTag = "BackImageTag";
     for (int i = viewControllers.count - 1; i > 0; i--) {
         UIViewController *curVC = viewControllers[i];
         UIViewController *preVC = self.viewControllers[i - 1];
+
+        [[curVC navigationItem] setLeftBarButtonItem:[curVC backBarButtonItem]];
+        
         int index = [oldArray indexOfObject:preVC];
         if (index >= 0 && index < oldArray.count - 1) {
             UIViewController *lastVC = oldArray[index + 1];
