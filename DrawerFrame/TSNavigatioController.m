@@ -295,7 +295,7 @@ static char const * const BackImageTag = "BackImageTag";
         NSMutableArray *popedVC = [[NSMutableArray alloc] init];
         for (int i = self.viewControllers.count - 1; i >= 0; i--) {
             if (self.viewControllers[i] != viewController) {
-                [popedVC addObject:self.viewControllers[i]];
+                [popedVC insertObject:self.viewControllers[i] atIndex:0];
             }
             else {
                 image = ((UIViewController *)[popedVC lastObject]).backImage;
@@ -334,7 +334,7 @@ static char const * const BackImageTag = "BackImageTag";
         UIImage *image = nil;
         NSMutableArray *popedVC = [[NSMutableArray alloc] init];
         for (int i = self.viewControllers.count - 1; i > 0; i--) {
-            [popedVC addObject:self.viewControllers[i]];
+            [popedVC insertObject:self.viewControllers[i] atIndex:0];
         }
         returnControllers = [NSArray arrayWithArray:popedVC];
         image = ((UIViewController *)[popedVC lastObject]).backImage;
