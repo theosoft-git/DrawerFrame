@@ -28,6 +28,7 @@ typedef enum {
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, weak) id<TSDrawerFrameDelegate> tsDelegate;
 
+@property (nonatomic, copy) NSArray * (^preAction)();
 - (void)continuePopWithAnimation;
 - (void)cancelPopWithAnimation;
 

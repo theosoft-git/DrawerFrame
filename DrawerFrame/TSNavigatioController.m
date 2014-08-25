@@ -100,6 +100,7 @@ static char const * const BackImageTag = "BackImageTag";
     UIImageView                 *_img_shadow_right;
     UIPanGestureRecognizer      *_panGestureRecognier;
     UIView                      *_backgroundView;
+    UIImage                     *_lastViewBackImage;
 }
 
 - (id)init
@@ -160,6 +161,14 @@ static char const * const BackImageTag = "BackImageTag";
 	if ([viewController respondsToSelector:@selector(isDrawerView)]) {
         if ([viewController isDrawerView] && [self.viewControllers count] > 0) {
             [self initDrawerView:viewController];
+            
+            if (_preAction != NULL) {
+                NSArray *popped = _preAction();
+                if (popped.count > 0) {
+                    _lastViewBackImage = ((UIViewController *)popped.firstObject).backImage;
+                }
+            }
+
             [self initBackImage:viewController.backImage];
             _tsDelegate = viewController;
             
@@ -213,6 +222,12 @@ static char const * const BackImageTag = "BackImageTag";
                                  }
                                  completion:^(BOOL finish) {
                                      _isShowingAnimation = NO;
+                                     if (_preAction != NULL && _lastViewBackImage) {
+                                         _preAction = NULL;
+                                         self.topViewController.backImage = _lastViewBackImage;
+                                         _imageView.image = _lastViewBackImage;
+                                         _lastViewBackImage = nil;
+                                     }
                                      if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
                                          [_tsDelegate drawerAnimationDidEnd:self];
                                      }
