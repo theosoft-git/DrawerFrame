@@ -228,12 +228,12 @@ static char const * const BackImageTag = "BackImageTag";
                                      switch ([viewController navigationStyle]) {
                                          case TSNavigationStyleIOS7:
                                              [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
-                                             [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                             [curView setTransform:CGAffineTransformIdentity];
                                              break;
                                          case TSNavigationStyleDrawer:
                                              [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
                                              _imageView.alpha = 0.6;
-                                             [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
+                                             [curView setTransform:CGAffineTransformIdentity];
                                              break;
                                          case TSNavigationStyleCascade:
                                              [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
@@ -622,7 +622,7 @@ static char const * const BackImageTag = "BackImageTag";
                              default:
                                  break;
                          }
-                     }completion:^(BOOL finish){
+                     } completion:^(BOOL finish) {
                          [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
                          action(NO);
                          UIViewController *viewController = [self topViewController];
@@ -658,10 +658,6 @@ static char const * const BackImageTag = "BackImageTag";
                                                      options:UIViewAnimationOptionCurveEaseInOut
                                                   animations:^(void){
                                                       switch ([viewController navigationStyle]) {
-                                                          case TSNavigationStyleIOS7:
-                                                              break;
-                                                          case TSNavigationStyleDrawer:
-                                                              break;
                                                           case TSNavigationStyleCascade:
                                                               [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
                                                               break;
