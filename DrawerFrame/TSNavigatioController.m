@@ -709,7 +709,12 @@ static char const * const BackImageTag = "BackImageTag";
         UIGraphicsBeginImageContext(curView.frame.size);
     }
     
-    [curView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    if ([curView respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
+        [curView drawViewHierarchyInRect:curView.frame afterScreenUpdates:NO];
+    }
+    else {
+        [curView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    }
     UIImage *lastViewImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
