@@ -201,12 +201,14 @@ static char const * const BackImageTag = "BackImageTag";
                         [_imageView removeFromSuperview];
                         [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
                         [self removeRightShadow];
+                        [self addLeftShadow2View:curView];
                         [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
                         break;
                     case TSNavigationStyleCascade:
                         [_imageView removeFromSuperview];
                         [[[AppDelegate instance] window] addSubview:_imageView];
                         [self addRightShadow];
+                        [self removeLeftShadow];
                         break;
                         
                     default:
@@ -237,6 +239,7 @@ static char const * const BackImageTag = "BackImageTag";
                                  }
                                  completion:^(BOOL finish) {
                                      _isShowingAnimation = NO;
+                                     [self removeLeftShadow];
                                      if (_preAction != NULL && _lastViewBackImage) {
                                          _preAction = NULL;
                                          self.topViewController.backImage = _lastViewBackImage;
@@ -269,6 +272,9 @@ static char const * const BackImageTag = "BackImageTag";
             if (CGAffineTransformIsIdentity(_imageView.transform)) {
                 [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
             }
+            [_imageView removeFromSuperview];
+            [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+            [self addLeftShadow2View:self.view];
             break;
         }
         case TSNavigationStyleDrawer: {
@@ -276,9 +282,15 @@ static char const * const BackImageTag = "BackImageTag";
                 _imageView.alpha = 0.6;
                 [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
             }
+            [_imageView removeFromSuperview];
+            [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+            [self addLeftShadow2View:self.view];
             break;
         }
         case TSNavigationStyleCascade:
+            [_imageView removeFromSuperview];
+            [[[AppDelegate instance] window] addSubview:_imageView];
+            [self addRightShadow];
             break;
             
         default:
@@ -491,12 +503,7 @@ static char const * const BackImageTag = "BackImageTag";
                     [_tsDelegate drawerAnimationWillShow:self];
                 }
                 _isShowingAnimation = YES;
-                if (!_img_shadow_left.superview) {
-                    CGRect screenFrame = [[UIScreen mainScreen] bounds];
-                    curView.clipsToBounds = NO;
-                    [curView addSubview:_img_shadow_left];
-                    [_img_shadow_left setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
-                }
+                [self addLeftShadow2View:curView];
             }
             
             UIViewController *viewController = [self topViewController];
@@ -601,6 +608,7 @@ static char const * const BackImageTag = "BackImageTag";
                                  [_imageView removeFromSuperview];
                                  [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
                                  [self removeRightShadow];
+                                 [self removeLeftShadow];
                                  _isShowingAnimation = NO;
                                  _imageView.image = viewController.backImage;
                                  if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
@@ -724,8 +732,26 @@ static char const * const BackImageTag = "BackImageTag";
     }
 }
 
+- (void)addLeftShadow2View:(UIView *)superView
+{
+    if (!_img_shadow_left.superview) {
+        CGRect screenFrame = [[UIScreen mainScreen] bounds];
+        superView.clipsToBounds = NO;
+        [superView addSubview:_img_shadow_left];
+        [_img_shadow_left setFrame:CGRectMake(-6 , 0, 6, screenFrame.size.height)];
+    }
+}
+
+- (void)removeLeftShadow
+{
+    [_img_shadow_left removeFromSuperview];
+}
+
 - (void)addRightShadow
 {
+    if (_img_shadow_down.superview || _img_shadow_right.superview || _img_shadow_up.superview) {
+        return;
+    }
     _imageView.clipsToBounds = NO;
     _img_shadow_up.frame = CGRectMake(0, -36, _imageView.frame.size.width, 36);
     [_imageView addSubview:_img_shadow_up];
