@@ -210,6 +210,12 @@ static char const * const BackImageTag = "BackImageTag";
                         [self addRightShadow];
                         [self removeLeftShadow];
                         break;
+                    case TSNavigationStyleIOS7Pop:
+                        [curView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                        [_imageView removeFromSuperview];
+                        [[[AppDelegate instance] window] addSubview:_imageView];
+                        [self addLeftShadow2View:_imageView];
+                        [self removeRightShadow];
                         
                     default:
                         break;
@@ -231,6 +237,10 @@ static char const * const BackImageTag = "BackImageTag";
                                              break;
                                          case TSNavigationStyleCascade:
                                              [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
+                                             break;
+                                         case TSNavigationStyleIOS7Pop:
+                                             [_imageView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                                             [curView setTransform:CGAffineTransformIdentity];
                                              break;
                                              
                                          default:
@@ -292,6 +302,11 @@ static char const * const BackImageTag = "BackImageTag";
             [[[AppDelegate instance] window] addSubview:_imageView];
             [self addRightShadow];
             break;
+        case TSNavigationStyleIOS7Pop:
+            [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+            [_imageView removeFromSuperview];
+            [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+            [self addLeftShadow2View:self.view];
             
         default:
             break;
@@ -441,6 +456,11 @@ static char const * const BackImageTag = "BackImageTag";
                     [[[AppDelegate instance] window] addSubview:_imageView];
                     [self addRightShadow];
                     break;
+                case TSNavigationStyleIOS7Pop:
+                    [curView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
+                    [_imageView removeFromSuperview];
+                    [[[AppDelegate instance] window] addSubview:_imageView];
+                    [self addLeftShadow2View:_imageView];
                     
                 default:
                     break;
@@ -462,6 +482,10 @@ static char const * const BackImageTag = "BackImageTag";
                                          break;
                                      case TSNavigationStyleCascade:
                                          [_imageView setTransform:CGAffineTransformConcat(CGAffineTransformMakeScale(0.75, 0.75), CGAffineTransformMakeTranslation(-240, 0))];
+                                         break;
+                                     case TSNavigationStyleIOS7Pop:
+                                         [_imageView setTransform:CGAffineTransformMakeTranslation(320, 0)];
+                                         [curView setTransform:CGAffineTransformIdentity];
                                          break;
                                          
                                      default:
@@ -582,6 +606,7 @@ static char const * const BackImageTag = "BackImageTag";
                      animations:^(void){
                          switch ([viewController navigationStyle]) {
                              case TSNavigationStyleIOS7:
+                             case TSNavigationStyleIOS7Pop:
                                  [_imageView setTransform:CGAffineTransformMakeTranslation(0, 0)];
                                  [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
                                  break;
@@ -605,6 +630,7 @@ static char const * const BackImageTag = "BackImageTag";
                          switch ([viewController navigationStyle]) {
                              case TSNavigationStyleIOS7:
                              case TSNavigationStyleDrawer:
+                             case TSNavigationStyleIOS7Pop:
                                  [_imageView removeFromSuperview];
                                  [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
                                  [self removeRightShadow];
@@ -673,6 +699,7 @@ static char const * const BackImageTag = "BackImageTag";
                      animations:^(void){
                          switch ([viewController navigationStyle]) {
                              case TSNavigationStyleIOS7:
+                             case TSNavigationStyleIOS7Pop:
                                  [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
                                  [curView setTransform:CGAffineTransformMakeTranslation(0, 0)];
                                  break;

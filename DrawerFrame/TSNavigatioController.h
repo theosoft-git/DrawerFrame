@@ -11,7 +11,8 @@
 typedef enum {
     TSNavigationStyleIOS7,
     TSNavigationStyleDrawer,
-    TSNavigationStyleCascade
+    TSNavigationStyleCascade,
+    TSNavigationStyleIOS7Pop,
 } TSNavigationStyle;
 
 @class TSNavigationController;
