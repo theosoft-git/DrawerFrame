@@ -19,6 +19,8 @@
 
 @property (strong, nonatomic) TSNavigationController *navigationController;
 
+@property (assign, nonatomic) TSNavigationStyle navigationStyle;
+
 + (AppDelegate *)instance;
 
 @end

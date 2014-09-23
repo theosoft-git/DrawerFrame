@@ -20,6 +20,8 @@
     self.navigationController = [[TSNavigationController alloc] initWithRootViewController:self.viewController];
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
+    
+    self.navigationStyle = TSNavigationStyleIOS7;
     return YES;
 }
 

@@ -105,4 +105,9 @@
     }
 }
 
+- (TSNavigationStyle)navigationStyle
+{
+    return [AppDelegate instance].navigationStyle;
+}
+
 @end
