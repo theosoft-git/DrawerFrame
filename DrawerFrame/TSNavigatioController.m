@@ -199,21 +199,21 @@ static char const * const BackImageTag = "BackImageTag";
                     case TSNavigationStyleIOS7:
                     case TSNavigationStyleDrawer:
                         [_imageView removeFromSuperview];
-                        [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+                        [self.view.superview insertSubview:_imageView belowSubview:self.view];
                         [self removeRightShadow];
                         [self addLeftShadow2View:curView];
                         [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
                         break;
                     case TSNavigationStyleCascade:
                         [_imageView removeFromSuperview];
-                        [[[AppDelegate instance] window] addSubview:_imageView];
+                        [self.view.superview addSubview:_imageView];
                         [self addRightShadow];
                         [self removeLeftShadow];
                         break;
                     case TSNavigationStyleIOS7Pop:
                         [curView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
                         [_imageView removeFromSuperview];
-                        [[[AppDelegate instance] window] addSubview:_imageView];
+                        [self.view.superview addSubview:_imageView];
                         [self addLeftShadow2View:_imageView];
                         [self removeRightShadow];
                         
@@ -283,7 +283,7 @@ static char const * const BackImageTag = "BackImageTag";
                 [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
             }
             [_imageView removeFromSuperview];
-            [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+            [self.view.superview insertSubview:_imageView belowSubview:self.view];
             [self addLeftShadow2View:self.view];
             break;
         }
@@ -293,19 +293,19 @@ static char const * const BackImageTag = "BackImageTag";
                 [_imageView setTransform:CGAffineTransformMakeScale(0.95, 0.95)];
             }
             [_imageView removeFromSuperview];
-            [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+            [self.view.superview insertSubview:_imageView belowSubview:self.view];
             [self addLeftShadow2View:self.view];
             break;
         }
         case TSNavigationStyleCascade:
             [_imageView removeFromSuperview];
-            [[[AppDelegate instance] window] addSubview:_imageView];
+            [self.view.superview addSubview:_imageView];
             [self addRightShadow];
             break;
         case TSNavigationStyleIOS7Pop:
             [_imageView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
             [_imageView removeFromSuperview];
-            [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+            [self.view.superview insertSubview:_imageView belowSubview:self.view];
             [self addLeftShadow2View:self.view];
             
         default:
@@ -447,19 +447,19 @@ static char const * const BackImageTag = "BackImageTag";
                 case TSNavigationStyleIOS7:
                 case TSNavigationStyleDrawer:
                     [_imageView removeFromSuperview];
-                    [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+                    [self.view.superview insertSubview:_imageView belowSubview:self.view];
                     [self removeRightShadow];
                     [curView setTransform:CGAffineTransformMakeTranslation(320, 0)];
                     break;
                 case TSNavigationStyleCascade:
                     [_imageView removeFromSuperview];
-                    [[[AppDelegate instance] window] addSubview:_imageView];
+                    [self.view.superview addSubview:_imageView];
                     [self addRightShadow];
                     break;
                 case TSNavigationStyleIOS7Pop:
                     [curView setTransform:CGAffineTransformMakeTranslation(-160, 0)];
                     [_imageView removeFromSuperview];
-                    [[[AppDelegate instance] window] addSubview:_imageView];
+                    [self.view.superview addSubview:_imageView];
                     [self addLeftShadow2View:_imageView];
                     
                 default:
@@ -632,7 +632,7 @@ static char const * const BackImageTag = "BackImageTag";
                              case TSNavigationStyleDrawer:
                              case TSNavigationStyleIOS7Pop:
                                  [_imageView removeFromSuperview];
-                                 [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+                                 [self.view.superview insertSubview:_imageView belowSubview:self.view];
                                  [self removeRightShadow];
                                  [self removeLeftShadow];
                                  _isShowingAnimation = NO;
@@ -643,7 +643,7 @@ static char const * const BackImageTag = "BackImageTag";
                                  break;
                              case TSNavigationStyleCascade: {
                                  [_imageView removeFromSuperview];
-                                 [[[AppDelegate instance] window] addSubview:_imageView];
+                                 [self.view.superview addSubview:_imageView];
                                  if (self.viewControllers.count == 1) {
                                      _isShowingAnimation = NO;
                                      if (_tsDelegate && [_tsDelegate respondsToSelector:@selector(drawerAnimationDidEnd:)]) {
@@ -750,7 +750,7 @@ static char const * const BackImageTag = "BackImageTag";
         _imageView = [[UIImageView alloc] initWithImage:backImage];
         _imageView.frame  = self.view.frame;
         _imageView.backgroundColor = [UIColor blackColor];
-        [[[AppDelegate instance] window] insertSubview:_imageView belowSubview:self.view];
+        [self.view.superview insertSubview:_imageView belowSubview:self.view];
     }
     else {
         [_imageView setImage:backImage];
