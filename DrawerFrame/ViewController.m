@@ -21,6 +21,12 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
     switch ([AppDelegate instance].navigationStyle) {
         default:
         case TSNavigationStyleIOS7:
@@ -31,6 +37,9 @@
             break;
         case TSNavigationStyleCascade:
             self.scNavigationStyle.selectedSegmentIndex = 2;
+            break;
+        case TSNavigationStyleIOS7Pop:
+            self.scNavigationStyle.selectedSegmentIndex = 3;
             break;
     }
 }
@@ -57,6 +66,9 @@
             break;
         case 2:
             [AppDelegate instance].navigationStyle = TSNavigationStyleCascade;
+            break;
+        case 3:
+            [AppDelegate instance].navigationStyle = TSNavigationStyleIOS7Pop;
             break;
     }
 }
