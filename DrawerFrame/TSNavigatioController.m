@@ -466,6 +466,7 @@ static char const * const BackImageTag = "BackImageTag";
                     break;
             }
             [super setViewControllers:viewControllers animated:NO];
+            _tsDelegate = [self topViewController];
             [UIView animateWithDuration:0.25
                                   delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
